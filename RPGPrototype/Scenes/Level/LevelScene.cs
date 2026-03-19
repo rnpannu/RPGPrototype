@@ -8,11 +8,13 @@ namespace RPGPrototype.Scenes;
 
 public class LevelScene : Scene
 {
+	private LevelInputManager _input;
 	private Texture2D _background;
 	private Player _player;
 
 	public override void Initialize()
 	{
+		_input = new LevelInputManager();
 		base.Initialize();
 	}
 
@@ -24,6 +26,7 @@ public class LevelScene : Scene
 
 	public override void Update(GameTime gameTime)
 	{
+		_input.Update(gameTime);
 		base.Update(gameTime);
 	}
 
@@ -31,7 +34,11 @@ public class LevelScene : Scene
 	{
 		Core.GraphicsDevice.Clear(new Color(32, 40, 78, 255));
 		//Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Matrix.Identity);
-		Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Matrix.CreateScale(4.0f));
+		Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: 
+			_input.Transform
+			//Matrix.Identity
+			
+		);
 		Core.SpriteBatch.Draw(_background, Vector2.Zero, Color.White);
 		Core.SpriteBatch.End();
 		base.Draw(gameTime);

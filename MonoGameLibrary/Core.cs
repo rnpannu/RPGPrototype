@@ -39,6 +39,7 @@ public class Core : Game
     public static AudioController Audio { get; private set; }
     
     public static int Width { get; private set; } = 320;
+    
     public static int Height { get; private set; } = 180;
     
     
