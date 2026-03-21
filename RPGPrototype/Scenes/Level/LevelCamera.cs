@@ -18,7 +18,8 @@ public class LevelCamera
 	private Texture2D _cameraPlaceHolderTexture;
 	private Vector2 _textureOrigin;
 
-	private Matrix _zoomFactor;
+	private float _zoomAmount;
+	private Matrix _zoom;
 	public LevelCamera(int mapWidth, int mapHeight)
 	{
 		MapWidth = mapWidth;
@@ -38,30 +39,54 @@ public class LevelCamera
 		init => _mapHeight = value;
 	}
 
-	public Matrix ZoomFactor
+	public float ZoomAmount
 	{
-		get => _zoomFactor;
-		private set => _zoomFactor = value;
+		get => _zoomAmount;
+		set
+		{
+			_zoomAmount = value;
+			_zoom = Matrix.CreateScale(_zoomAmount);
+		}
 	}
+	
 
-	public Matrix TotalScale => Core.Scale * ZoomFactor;
+	public Vector2 CameraPosition
+	{
+		get => _cameraPosition;
+		private set => _cameraPosition = value;
+	}
+	public Matrix TotalScale => Core.Scale * _zoom;
+
+	public void Reset()
+	{
+		Initialize();
+	}
 	public void Initialize()
 	{
-		ZoomFactor = Matrix.CreateScale((3f / 4f));
+		ZoomAmount = 3f / 5f;
 		// Regardless of what the end resolution is, start the camera in the middle of the top left corner
+		Matrix totalScale = Core.Scale * _zoom;
 		Matrix invert = Matrix.Invert(TotalScale);
-		//_startingPos = Vector2.Transform(new Vector2(Core.VirtualWidth / 2, Core.VirtualHeight / 2), invert);
-		// Should startingPos be in world space or screenSpace?
-		_startingPos = Vector2.Transform(new Vector2(Core.Width / 2, Core.Height / 2), invert); 
+		_startingPos = Vector2.Transform(new Vector2(Core.VirtualWidth / 2f, Core.VirtualHeight / 2f), invert);
+		
 		_cameraPosition = _startingPos;
 		_minPos = new Vector2(0, 0);
-		_maxPos = new Vector2(MapWidth, MapHeight); // Current width of map, replace magic numbers
+		_maxPos = new Vector2(MapWidth, MapHeight);
 		
 		// TODO: Troubleshooting player sprite collision with the edge of the map
 		//_cameraPlaceHolderTexture = Core.Content.Load<Texture2D>("rock_in_water_01");
 		//_textureOrigin = new Vector2(_cameraPlaceHolderTexture.Width / 2, _cameraPlaceHolderTexture.Height / 2);
+		LoadContent();
+	}
 
-
+	public void LoadContent()
+	{
+		_cameraPlaceHolderTexture = Core.Content.Load<Texture2D>("sprites/objects/rock_in_water_01");
+		_textureOrigin = new Vector2(_cameraPlaceHolderTexture.Width / 2, _cameraPlaceHolderTexture.Height / 2);
+		_minPos.X = _minPos.X + _textureOrigin.X;
+		_minPos.Y = _minPos.Y + _textureOrigin.Y;
+		_maxPos.X = _maxPos.X - _textureOrigin.X;
+		_maxPos.Y = _maxPos.Y - _textureOrigin.Y;
 	}
 
 	public void UpdateCamera(Vector2 newPos)
@@ -78,33 +103,34 @@ public class LevelCamera
 			_cameraDirection.Normalize();
 		}
         
-		_cameraPosition += ((_cameraDirection * GameManager.DT * _playerSpeed));
-		_cameraPosition = Vector2.Clamp(_cameraPosition, _minPos, _maxPos);
+		CameraPosition += ((_cameraDirection * GameManager.DT * _playerSpeed));
+		CameraPosition = Vector2.Clamp(CameraPosition, _minPos, _maxPos);
 	}
 
 	public Matrix CalculateTranslation()
 	{
-		
+		/*Vector2 minCameraBounds = new Vector2(-(MapWidth - _startingPos.X * 2), -70);
+		Vector2 maxCameraBounds = new Vector2(0, 70);
 		float deltaX = _startingPos.X - _cameraPosition.X;
-		// TODO: Performance - concern: Is camera choppier when clamping is applied? 
-		// Discard redundant inputs once clamp is hit
-		// Want to have a smooth camera feel - apply smoothstep?
-		deltaX = MathHelper.Clamp(deltaX, -(_startingPos.X + MapWidth / 4) , _startingPos.X);
 		float deltaY = _startingPos.Y - _cameraPosition.Y;
-		//deltaY = MathHelper.Clamp(deltaY, 0, 180 + _startingPos.Y);
+
+		Vector2 translation = new Vector2(deltaX, deltaY);
+		translation = Vector2.Clamp(translation, minCameraBounds, maxCameraBounds);*/
+		
+		float deltaX = _startingPos.X - CameraPosition.X;
+		// TODO: Want to have a smooth camera feel - apply smoothstep?
+		deltaX = MathHelper.Clamp(deltaX, -(MapWidth - _startingPos.X * 2), 0);
+		float deltaY = _startingPos.Y - CameraPosition.Y;
+		deltaY = MathHelper.Clamp(deltaY, -(MapHeight- _startingPos.Y * 2), 0);
 		return Matrix.CreateTranslation(deltaX, deltaY, 0f);
 	}
 
 	public Matrix GetTransform()
 	{
-		return CalculateTranslation()
-		       *
-		       Core.Scale
-			       * ZoomFactor
-		       ;
+		return CalculateTranslation() * TotalScale;
 	}
 	public void DrawCameraTexture()
 	{
-		//Core.SpriteBatch.Draw(_cameraPlaceHolderTexture, _cameraPosition, Color.White);
+		Core.SpriteBatch.Draw(_cameraPlaceHolderTexture, _cameraPosition, null, Color.White, 0.0f, _textureOrigin,1.0f, SpriteEffects.None, 0.0f);
 	}
 }

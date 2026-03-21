@@ -98,7 +98,7 @@ public static class GameController
     {
         return s_mouse.Position.ToVector2();
     }
-
+    
     public static bool ToggleDebug()
     {
         return s_keyboard.WasKeyJustPressed(Keys.F11);

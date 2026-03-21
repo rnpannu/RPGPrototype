@@ -37,9 +37,9 @@ public class LevelScene : Scene
 		Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: 
 			_input.Transform
 			//Matrix.Identity
-			
 		);
 		Core.SpriteBatch.Draw(_background, Vector2.Zero, Color.White);
+		_input.Draw(gameTime);
 		Core.SpriteBatch.End();
 		base.Draw(gameTime);
 	}

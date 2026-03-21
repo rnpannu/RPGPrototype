@@ -35,5 +35,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:sprites/objects/rock_in_water_01.png
+/build:sprites/objects/rock_in_water_01.png;sprites/objects/rock_in_water_01
 

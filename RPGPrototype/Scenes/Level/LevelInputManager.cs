@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
+using RenderingLibrary.Graphics;
+using WizardsVsWirebacks;
 
 namespace RPGPrototype.Scenes;
 
@@ -24,13 +26,17 @@ public class LevelInputManager
 
 	public void Update(GameTime gameTime)
 	{
+		if (GameController.Exit())
+		{
+			_camera.Reset();
+		}
 		_camera.UpdateCamera(Vector2.One);
 		Transform = _camera.GetTransform();
 	}
 
 	public void Draw(GameTime gameTime)
 	{
-		
+		_camera.DrawCameraTexture();	
 	}
 
 }
