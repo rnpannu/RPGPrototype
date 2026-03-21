@@ -15,7 +15,7 @@ public class LevelInputManager
 
 	public LevelInputManager()
 	{
-		_camera = new LevelCamera();
+		_camera = new LevelCamera(592, 448);
 	}
 	public void Initialize()
 	{
