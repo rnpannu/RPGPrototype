@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
-using WizardsVsWirebacks;
 
 namespace RPGPrototype.Scenes;
 
@@ -9,17 +8,18 @@ public class LevelCamera
 {
 	private readonly int _mapWidth;
 	private readonly int _mapHeight;
-	private float _playerSpeed = 300;
-	
+	private float _playerSpeed = 150;
+
 	private Vector2 _cameraPosition;
 	private Vector2 _cameraDirection;
 	private Vector2 _startingPos, _minPos, _maxPos;
-	
+
 	private Texture2D _cameraPlaceHolderTexture;
 	private Vector2 _textureOrigin;
 
 	private float _zoomAmount;
 	private Matrix _zoom;
+
 	public LevelCamera(int mapWidth, int mapHeight)
 	{
 		MapWidth = mapWidth;
@@ -39,6 +39,7 @@ public class LevelCamera
 		init => _mapHeight = value;
 	}
 
+	// Create OnZoomChanged event?
 	public float ZoomAmount
 	{
 		get => _zoomAmount;
@@ -48,19 +49,15 @@ public class LevelCamera
 			_zoom = Matrix.CreateScale(_zoomAmount);
 		}
 	}
-	
 
 	public Vector2 CameraPosition
 	{
 		get => _cameraPosition;
 		private set => _cameraPosition = value;
 	}
-	public Matrix TotalScale => Core.Scale * _zoom;
 
-	public void Reset()
-	{
-		Initialize();
-	}
+	public Matrix TotalScale => Core.Scale * _zoom;
+	
 	public void Initialize()
 	{
 		ZoomAmount = 3f / 5f;
@@ -68,15 +65,17 @@ public class LevelCamera
 		Matrix totalScale = Core.Scale * _zoom;
 		Matrix invert = Matrix.Invert(TotalScale);
 		_startingPos = Vector2.Transform(new Vector2(Core.VirtualWidth / 2f, Core.VirtualHeight / 2f), invert);
-		
+
 		_cameraPosition = _startingPos;
 		_minPos = new Vector2(0, 0);
 		_maxPos = new Vector2(MapWidth, MapHeight);
-		
-		// TODO: Troubleshooting player sprite collision with the edge of the map
-		//_cameraPlaceHolderTexture = Core.Content.Load<Texture2D>("rock_in_water_01");
-		//_textureOrigin = new Vector2(_cameraPlaceHolderTexture.Width / 2, _cameraPlaceHolderTexture.Height / 2);
+
 		LoadContent();
+	}
+	
+	public void Reset()
+	{
+		Initialize();
 	}
 
 	public void LoadContent()
@@ -89,24 +88,32 @@ public class LevelCamera
 		_maxPos.Y = _maxPos.Y - _textureOrigin.Y;
 	}
 
-	public void UpdateCamera(Vector2 newPos)
+	/// <summary>
+	/// Updates internal positions according to WASD movements
+	/// </summary>
+	/// <param name="newPos"></param>
+	public void UpdateCamera()
 	{
 		_cameraDirection = Vector2.Zero;
-        
+
 		if (GameController.MoveUp()) _cameraDirection.Y--;
 		if (GameController.MoveDown()) _cameraDirection.Y++;
 		if (GameController.MoveLeft()) _cameraDirection.X--;
 		if (GameController.MoveRight()) _cameraDirection.X++;
 
-		if(_cameraDirection != Vector2.Zero)
+		if (_cameraDirection != Vector2.Zero)
 		{
 			_cameraDirection.Normalize();
 		}
-        
+
 		CameraPosition += ((_cameraDirection * GameManager.DT * _playerSpeed));
 		CameraPosition = Vector2.Clamp(CameraPosition, _minPos, _maxPos);
 	}
 
+	/// <summary>
+	/// Get the total translation from WASD movements done to the world
+	/// </summary>
+	/// <returns></returns>
 	public Matrix CalculateTranslation()
 	{
 		/*Vector2 minCameraBounds = new Vector2(-(MapWidth - _startingPos.X * 2), -70);
@@ -116,21 +123,30 @@ public class LevelCamera
 
 		Vector2 translation = new Vector2(deltaX, deltaY);
 		translation = Vector2.Clamp(translation, minCameraBounds, maxCameraBounds);*/
-		
+
 		float deltaX = _startingPos.X - CameraPosition.X;
 		// TODO: Want to have a smooth camera feel - apply smoothstep?
 		deltaX = MathHelper.Clamp(deltaX, -(MapWidth - _startingPos.X * 2), 0);
 		float deltaY = _startingPos.Y - CameraPosition.Y;
-		deltaY = MathHelper.Clamp(deltaY, -(MapHeight- _startingPos.Y * 2), 0);
+		deltaY = MathHelper.Clamp(deltaY, -(MapHeight - _startingPos.Y * 2), 0);
 		return Matrix.CreateTranslation(deltaX, deltaY, 0f);
 	}
 
+	/// <summary>
+	/// Get the total transform matrix applied to the world
+	/// </summary>
+	/// <returns> A matrix to be applied to the spritebatch begin </returns>
 	public Matrix GetTransform()
 	{
 		return CalculateTranslation() * TotalScale;
 	}
+
+	/// <summary>
+	/// Draw the placeholder texture for the camera
+	/// </summary>
 	public void DrawCameraTexture()
 	{
-		Core.SpriteBatch.Draw(_cameraPlaceHolderTexture, _cameraPosition, null, Color.White, 0.0f, _textureOrigin,1.0f, SpriteEffects.None, 0.0f);
+		Core.SpriteBatch.Draw(_cameraPlaceHolderTexture, _cameraPosition, null, Color.White, 0.0f, _textureOrigin, 1.0f,
+			SpriteEffects.None, 0.0f);
 	}
 }

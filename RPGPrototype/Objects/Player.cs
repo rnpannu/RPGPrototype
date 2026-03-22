@@ -18,33 +18,33 @@ public class Player : Entity
 	public Vector2 Position
 	{
 		get => _position;
-		set => _position = value;
+		private set => _position = value;
 	}
 
 	public Sprite Sprite
 	{
 		get => _sprite;
-		set => _sprite = value;
+		private set => _sprite = value;
 	}
 
 	public void Initialize()
 	{
-		throw new System.NotImplementedException();
+		
 	}
 
 	public void LoadContent()
 	{
-		throw new System.NotImplementedException();
+
 	}
 
-	public void Update(GameTime gameTime)
+	public void Update(GameTime gameTime, Vector2 position)
 	{
-		throw new System.NotImplementedException();
+		Position = position;
 	}
 
 	public void Draw(GameTime gameTime)
 	{
-		throw new System.NotImplementedException();
+		
 	}
 
 

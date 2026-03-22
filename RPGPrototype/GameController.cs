@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using System;
 using Microsoft.Xna.Framework.Input;
 
-namespace WizardsVsWirebacks;
+namespace RPGPrototype;
 
 public static class GameController
 {
