@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<TextureAtlas>
+    <Texture>sprites/player</Texture>
+    <Regions>
+        <Region name="player-1" x="0" y="0" width="48" height="64" />
+    </Regions>
+
+</TextureAtlas>

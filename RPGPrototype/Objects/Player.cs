@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 
 namespace RPGPrototype.Objects;
@@ -10,31 +13,32 @@ public class Player : Entity
 	private Sprite _sprite;
 	private List<Animation> _animations;
 
-	public Player(AnimatedSprite sprite, Vector2 position)
+	//private Action SpriteChanged 
+	public Player()
 	{
-		Sprite = sprite;
-		Position = position;
+		Initialize();
 	}
 	public Vector2 Position
 	{
 		get => _position;
-		private set => _position = value;
+		set => _position = value;
 	}
 
 	public Sprite Sprite
 	{
 		get => _sprite;
-		private set => _sprite = value;
+		set => _sprite = value;
 	}
 
 	public void Initialize()
 	{
-		
+		Position = Vector2.Zero;
 	}
 
-	public void LoadContent()
+	public void LoadContent(TextureAtlas objectAtlas)
 	{
-
+		Sprite = objectAtlas.CreateSprite("player-1");
+		Sprite.CenterOrigin();
 	}
 
 	public void Update(GameTime gameTime, Vector2 position)
@@ -44,7 +48,7 @@ public class Player : Entity
 
 	public void Draw(GameTime gameTime)
 	{
-		
+		Sprite.Draw(Core.SpriteBatch, Position);
 	}
 
 

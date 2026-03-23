@@ -25,6 +25,21 @@
 /processorParam:TextureFormat=Color
 /build:maps/Map/simplified/Level_0/_composite.png
 
+#begin sprites/characters/player.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sprites/characters/player.png;sprites/objects/player
+
+#begin sprites/objectAtlas-definition.xml
+/copy:sprites/objectAtlas-definition.xml
+
 #begin sprites/objects/rock_in_water_01.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -36,4 +51,16 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:sprites/objects/rock_in_water_01.png;sprites/objects/rock_in_water_01
+
+#begin sprites/player.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sprites/player.png
 

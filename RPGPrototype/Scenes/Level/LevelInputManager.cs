@@ -13,7 +13,7 @@ public class LevelInputManager
 {
 	private LevelCamera _camera;
 	private Matrix _transform;
-	private Vector2 _playerPosition;
+	private Vector2 _cameraPosition;
 
 	public LevelInputManager()
 	{
@@ -26,10 +26,10 @@ public class LevelInputManager
 		private set => _transform = value;
 	}
 
-	public Vector2 PlayerPosition
+	public Vector2 CameraPosition
 	{
-		get => _playerPosition;
-		private set => _playerPosition = value;
+		get => _cameraPosition;
+		private set => _cameraPosition = value;
 	}
 
 	public void Initialize()
@@ -45,7 +45,7 @@ public class LevelInputManager
 		}
 
 		_camera.UpdateCamera();
-		PlayerPosition = _camera.CameraPosition;
+		CameraPosition = _camera.CameraPosition;
 		Transform = _camera.GetTransform();
 	}
 
