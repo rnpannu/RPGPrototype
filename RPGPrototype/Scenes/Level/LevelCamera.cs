@@ -6,11 +6,10 @@ namespace RPGPrototype.Scenes;
 
 public class LevelCamera
 {
-	private readonly int _mapWidth;
-	private readonly int _mapHeight;
+	private LevelData _map;
 	private float _playerSpeed = 150;
 
-	private Vector2 _cameraPosition;
+	private Vector2 _position;
 	private Vector2 _cameraDirection;
 	private Vector2 _startingPos, _minPos, _maxPos;
 
@@ -20,24 +19,12 @@ public class LevelCamera
 	private float _zoomAmount;
 	private Matrix _zoom;
 
-	public LevelCamera(int mapWidth, int mapHeight)
+	public LevelCamera(LevelData map)
 	{
-		MapWidth = mapWidth;
-		MapHeight = mapHeight;
+		_map = map;
 		Initialize();
 	}
-
-	public int MapWidth
-	{
-		get => _mapWidth;
-		init => _mapWidth = value;
-	}
-
-	public int MapHeight
-	{
-		get => _mapHeight;
-		init => _mapHeight = value;
-	}
+	
 
 	// Create OnZoomChanged event?
 	public float ZoomAmount
@@ -50,10 +37,10 @@ public class LevelCamera
 		}
 	}
 
-	public Vector2 CameraPosition
+	public Vector2 Position
 	{
-		get => _cameraPosition;
-		private set => _cameraPosition = value;
+		get => _position;
+		private set => _position = value;
 	}
 
 	public Matrix TotalScale => Core.Scale * _zoom;
@@ -66,17 +53,13 @@ public class LevelCamera
 		Matrix invert = Matrix.Invert(TotalScale);
 		_startingPos = Vector2.Transform(new Vector2(Core.VirtualWidth / 2f, Core.VirtualHeight / 2f), invert);
 
-		_cameraPosition = _startingPos;
+		_position = _startingPos;
 		_minPos = new Vector2(0, 0);
-		_maxPos = new Vector2(MapWidth, MapHeight);
+		_maxPos = _map.Bounds;
 
 		LoadContent();
 	}
 	
-	public void Reset()
-	{
-		Initialize();
-	}
 
 	public void LoadContent()
 	{
@@ -92,22 +75,23 @@ public class LevelCamera
 	/// Updates internal positions according to WASD movements
 	/// </summary>
 	/// <param name="newPos"></param>
-	public void UpdateCamera()
+	public void Follow(Vector2 position)
 	{
-		_cameraDirection = Vector2.Zero;
+		Position = position;
+		/*_cameraDirection = Vector2.Zero;
 
 		if (GameController.MoveUp()) _cameraDirection.Y--;
 		if (GameController.MoveDown()) _cameraDirection.Y++;
 		if (GameController.MoveLeft()) _cameraDirection.X--;
-		if (GameController.MoveRight()) _cameraDirection.X++;
+		if (GameController.MoveRight()) _cameraDirection.X++;*/
 
-		if (_cameraDirection != Vector2.Zero)
+		/*if (direction != Vector2.Zero)
 		{
-			_cameraDirection.Normalize();
+			direction.Normalize();
 		}
 
-		CameraPosition += ((_cameraDirection * GameManager.DT * _playerSpeed));
-		CameraPosition = Vector2.Clamp(CameraPosition, _minPos, _maxPos);
+		CameraPosition += ((direction * GameManager.DT * _playerSpeed));
+		CameraPosition = Vector2.Clamp(CameraPosition, _minPos, _maxPos);*/
 	}
 
 	/// <summary>
@@ -116,19 +100,11 @@ public class LevelCamera
 	/// <returns></returns>
 	public Matrix CalculateTranslation()
 	{
-		/*Vector2 minCameraBounds = new Vector2(-(MapWidth - _startingPos.X * 2), -70);
-		Vector2 maxCameraBounds = new Vector2(0, 70);
-		float deltaX = _startingPos.X - _cameraPosition.X;
-		float deltaY = _startingPos.Y - _cameraPosition.Y;
-
-		Vector2 translation = new Vector2(deltaX, deltaY);
-		translation = Vector2.Clamp(translation, minCameraBounds, maxCameraBounds);*/
-
-		float deltaX = _startingPos.X - CameraPosition.X;
+		float deltaX = _startingPos.X - Position.X;
 		// TODO: Want to have a smooth camera feel - apply smoothstep?
-		deltaX = MathHelper.Clamp(deltaX, -(MapWidth - _startingPos.X * 2), 0);
-		float deltaY = _startingPos.Y - CameraPosition.Y;
-		deltaY = MathHelper.Clamp(deltaY, -(MapHeight - _startingPos.Y * 2), 0);
+		deltaX = MathHelper.Clamp(deltaX, -(_map.Width - _startingPos.X * 2), 0);
+		float deltaY = _startingPos.Y - Position.Y;
+		deltaY = MathHelper.Clamp(deltaY, -(_map.Height - _startingPos.Y * 2), 0);
 		return Matrix.CreateTranslation(deltaX, deltaY, 0f);
 	}
 
@@ -144,9 +120,10 @@ public class LevelCamera
 	/// <summary>
 	/// Draw the placeholder texture for the camera
 	/// </summary>
+	
 	public void DrawCameraTexture()
 	{
-		Core.SpriteBatch.Draw(_cameraPlaceHolderTexture, _cameraPosition, null, Color.White, 0.0f, _textureOrigin, 1.0f,
+		Core.SpriteBatch.Draw(_cameraPlaceHolderTexture, _position, null, Color.White, 0.0f, _textureOrigin, 1.0f,
 			SpriteEffects.None, 0.0f);
 	}
 }

@@ -11,42 +11,48 @@ namespace RPGPrototype.Scenes;
 /// </summary>
 public class LevelInputManager
 {
-	private LevelCamera _camera;
+
 	private Matrix _transform;
+	private Vector2 _movementDir;
 	private Vector2 _cameraPosition;
+
 
 	public LevelInputManager()
 	{
 		Initialize();
 	}
 
+	public Vector2 CurrentMovementDirection
+	{
+		get => _movementDir;
+		private set => _movementDir = value;
+	}
 	public Matrix Transform
 	{
 		get => _transform;
 		private set => _transform = value;
 	}
+	
 
-	public Vector2 CameraPosition
-	{
-		get => _cameraPosition;
-		private set => _cameraPosition = value;
-	}
 
 	public void Initialize()
 	{
-		_camera = new LevelCamera(592, 448);
+
 	}
 
 	public void Update(GameTime gameTime)
 	{
-		if (GameController.Exit())
+		_movementDir = Vector2.Zero;
+		
+		if (GameController.MoveUp()) _movementDir.Y--;
+		if (GameController.MoveDown()) _movementDir.Y++;
+		if (GameController.MoveLeft()) _movementDir.X--;
+		if (GameController.MoveRight()) _movementDir.X++;
+		
+		if (_movementDir != Vector2.Zero)
 		{
-			_camera.Reset();
+			_movementDir.Normalize();
 		}
-
-		_camera.UpdateCamera();
-		CameraPosition = _camera.CameraPosition;
-		Transform = _camera.GetTransform();
 	}
 
 	public void Draw(GameTime gameTime)

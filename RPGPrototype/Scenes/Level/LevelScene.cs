@@ -1,24 +1,38 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
 using MonoGameLibrary.Scenes;
+using RPGPrototype.Log;
 using RPGPrototype.Objects;
 
 namespace RPGPrototype.Scenes;
 
 public class LevelScene : Scene
 {
+	private LevelData _map;
+	private LevelCamera _camera;
 	private LevelInputManager _inputManager;
 	private LevelObjectManager _objectManager;
 
+	private int[,] _collisionGrid;
+
 	private Texture2D _background;
 
-
+	
 	public override void Initialize()
 	{
-		_objectManager = new LevelObjectManager();
+		_map = new LevelData(592, 448);
+		_camera = new LevelCamera(_map);
+		_objectManager = new LevelObjectManager(_map);
 		_inputManager = new LevelInputManager();
+		
 		base.Initialize();
+	}
+
+	public void Reset()
+	{
+		Initialize();
 	}
 
 	public override void LoadContent()
@@ -30,8 +44,15 @@ public class LevelScene : Scene
 
 	public override void Update(GameTime gameTime)
 	{
+		
+		if (GameController.Exit())
+		{
+			Reset();
+		}
+
 		_inputManager.Update(gameTime);
-		_objectManager.Update(gameTime, _inputManager.CameraPosition);
+		_objectManager.Update(gameTime, _inputManager.CurrentMovementDirection);
+		_camera.Follow(_objectManager.Player.Position);
 		base.Update(gameTime);
 	}
 
@@ -39,7 +60,7 @@ public class LevelScene : Scene
 	{
 		Core.GraphicsDevice.Clear(new Color(32, 40, 78, 255));
 		//Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Matrix.Identity); // Remove all transformations
-		Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _inputManager.Transform);
+		Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _camera.GetTransform());
 
 		Core.SpriteBatch.Draw(_background, Vector2.Zero, Color.White);
 		_inputManager.Draw(gameTime);
