@@ -7,14 +7,10 @@ namespace RPGPrototype.Scenes;
 public class LevelCamera
 {
 	private LevelData _map;
-	private float _playerSpeed = 150;
 
 	private Vector2 _position;
 	private Vector2 _cameraDirection;
 	private Vector2 _startingPos, _minPos, _maxPos;
-
-	private Texture2D _cameraPlaceHolderTexture;
-	private Vector2 _textureOrigin;
 
 	private float _zoomAmount;
 	private Matrix _zoom;
@@ -24,8 +20,6 @@ public class LevelCamera
 		_map = map;
 		Initialize();
 	}
-	
-
 	// Create OnZoomChanged event?
 	public float ZoomAmount
 	{
@@ -56,21 +50,8 @@ public class LevelCamera
 		_position = _startingPos;
 		_minPos = new Vector2(0, 0);
 		_maxPos = _map.Bounds;
-
-		LoadContent();
 	}
 	
-
-	public void LoadContent()
-	{
-		_cameraPlaceHolderTexture = Core.Content.Load<Texture2D>("sprites/objects/rock_in_water_01");
-		_textureOrigin = new Vector2(_cameraPlaceHolderTexture.Width / 2, _cameraPlaceHolderTexture.Height / 2);
-		_minPos.X = _minPos.X + _textureOrigin.X;
-		_minPos.Y = _minPos.Y + _textureOrigin.Y;
-		_maxPos.X = _maxPos.X - _textureOrigin.X;
-		_maxPos.Y = _maxPos.Y - _textureOrigin.Y;
-	}
-
 	/// <summary>
 	/// Updates internal positions according to WASD movements
 	/// </summary>
@@ -78,20 +59,6 @@ public class LevelCamera
 	public void Follow(Vector2 position)
 	{
 		Position = position;
-		/*_cameraDirection = Vector2.Zero;
-
-		if (GameController.MoveUp()) _cameraDirection.Y--;
-		if (GameController.MoveDown()) _cameraDirection.Y++;
-		if (GameController.MoveLeft()) _cameraDirection.X--;
-		if (GameController.MoveRight()) _cameraDirection.X++;*/
-
-		/*if (direction != Vector2.Zero)
-		{
-			direction.Normalize();
-		}
-
-		CameraPosition += ((direction * GameManager.DT * _playerSpeed));
-		CameraPosition = Vector2.Clamp(CameraPosition, _minPos, _maxPos);*/
 	}
 
 	/// <summary>
@@ -116,14 +83,5 @@ public class LevelCamera
 	{
 		return CalculateTranslation() * TotalScale;
 	}
-
-	/// <summary>
-	/// Draw the placeholder texture for the camera
-	/// </summary>
 	
-	public void DrawCameraTexture()
-	{
-		Core.SpriteBatch.Draw(_cameraPlaceHolderTexture, _position, null, Color.White, 0.0f, _textureOrigin, 1.0f,
-			SpriteEffects.None, 0.0f);
-	}
 }

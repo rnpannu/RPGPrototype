@@ -14,8 +14,6 @@ public class Player : Entity
 	private Sprite _sprite;
 	private List<Animation> _animations;
 	
-	
-	
 	//private Action SpriteChanged 
 	public Player()
 	{
@@ -55,6 +53,7 @@ public class Player : Entity
 
 	public void Update(GameTime gameTime)
 	{
+		
 	}
 
 	public void Draw(GameTime gameTime)

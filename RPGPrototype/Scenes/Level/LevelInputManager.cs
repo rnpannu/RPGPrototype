@@ -11,12 +11,10 @@ namespace RPGPrototype.Scenes;
 /// </summary>
 public class LevelInputManager
 {
-
 	private Matrix _transform;
 	private Vector2 _movementDir;
 	private Vector2 _cameraPosition;
-
-
+	
 	public LevelInputManager()
 	{
 		Initialize();
@@ -33,8 +31,6 @@ public class LevelInputManager
 		private set => _transform = value;
 	}
 	
-
-
 	public void Initialize()
 	{
 
@@ -54,7 +50,6 @@ public class LevelInputManager
 			_movementDir.Normalize();
 		}
 	}
-
 	public void Draw(GameTime gameTime)
 	{
 	}

@@ -44,7 +44,7 @@ public class LevelScene : Scene
 
 	public override void Update(GameTime gameTime)
 	{
-		
+		// Temp
 		if (GameController.Exit())
 		{
 			Reset();
@@ -59,12 +59,12 @@ public class LevelScene : Scene
 	public override void Draw(GameTime gameTime)
 	{
 		Core.GraphicsDevice.Clear(new Color(32, 40, 78, 255));
-		//Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Matrix.Identity); // Remove all transformations
 		Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _camera.GetTransform());
 
 		Core.SpriteBatch.Draw(_background, Vector2.Zero, Color.White);
-		_inputManager.Draw(gameTime);
+		//_inputManager.Draw(gameTime);
 		_objectManager.Draw(gameTime);
+		
 		Core.SpriteBatch.End();
 		base.Draw(gameTime);
 	}
