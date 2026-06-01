@@ -37,12 +37,12 @@ public class Player : Entity
 		private set
 		{
 			_sprite = value;
-			_sprite.CenterOrigin();
+			//_sprite.CenterOrigin();
 		} 
 	}
 
-	public Rectangle Hitbox => new Rectangle((int)(Position.X - Sprite.Origin.X), (int)(Position.Y - Sprite.Origin.Y), (int)Sprite.Width, (int)Sprite.Height);
-
+	//public Rectangle Hitbox => new Rectangle((int)(Position.X - Sprite.Origin.X), (int)(Position.Y - Sprite.Origin.Y), (int)Sprite.Width, (int)Sprite.Height);
+	public Rectangle Rect => new Rectangle((int)(Position.X), (int)(Position.Y), (int)Sprite.Width, (int)Sprite.Height);
 	public void Initialize()
 	{
 		Position = new Vector2(50, 50);
@@ -70,7 +70,7 @@ public class Player : Entity
 		Texture2D rectangleTexture = new Texture2D(Core.GraphicsDevice, 1, 1);
 		rectangleTexture.SetData(new Color[] {new (255, 0, 0, 255)});
 		
-		Core.SpriteBatch.Draw(rectangleTexture, Hitbox, Color.Lavender);
+		Core.SpriteBatch.Draw(rectangleTexture, Rect, Color.Lavender);
 		
 	}
 
