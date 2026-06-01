@@ -4,7 +4,10 @@ namespace RPGPrototype.Scenes;
 
 public class LevelData
 {
+	// Width in px
 	public int Width { get; private set; }
+	
+	// Height in px
 	public int Height { get; private set; }
 	public int TileSize { get; private set; }
 	

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 
@@ -9,7 +10,7 @@ namespace RPGPrototype.Objects;
 
 public class Player : Entity
 {
-	private Vector2 _position;
+	public Vector2 _position;
 	private Vector2 _movementSpeed;
 	private Sprite _sprite;
 	private List<Animation> _animations;
@@ -40,9 +41,11 @@ public class Player : Entity
 		} 
 	}
 
+	public Rectangle Hitbox => new Rectangle((int)(Position.X - Sprite.Origin.X), (int)(Position.Y - Sprite.Origin.Y), (int)Sprite.Width, (int)Sprite.Height);
+
 	public void Initialize()
 	{
-		Position = Vector2.Zero;
+		Position = new Vector2(50, 50);
 		_movementSpeed = new Vector2(130, 130);
 	}
 
@@ -59,6 +62,16 @@ public class Player : Entity
 	public void Draw(GameTime gameTime)
 	{
 		Sprite.Draw(Core.SpriteBatch, Position);
+	}
+
+	public void DrawHitBox()
+	{
+		int tileSize = 16;
+		Texture2D rectangleTexture = new Texture2D(Core.GraphicsDevice, 1, 1);
+		rectangleTexture.SetData(new Color[] {new (255, 0, 0, 255)});
+		
+		Core.SpriteBatch.Draw(rectangleTexture, Hitbox, Color.Lavender);
+		
 	}
 
 }
