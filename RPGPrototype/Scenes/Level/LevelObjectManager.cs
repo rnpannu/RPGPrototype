@@ -67,7 +67,10 @@ public class LevelObjectManager
 	public void LoadContent(ContentManager content)
 	{
 		_objectAtlas = TextureAtlas.FromFile(content, "sprites/objectAtlas-definition.xml");
-		Player.LoadContent(_objectAtlas);
+		TextureAtlas playerAtlas = TextureAtlas.FromFile(content, "sprites/playerAtlas-definition.xml");
+		Player.LoadContent(playerAtlas);
+		
+		
 	}
 	/// <summary>
 	/// Update entities and anything else that the object manager is responsible for.

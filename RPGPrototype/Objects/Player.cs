@@ -12,7 +12,8 @@ public class Player : Entity
 {
 	public Vector2 _position;
 	private Vector2 _movementSpeed;
-	private Sprite _sprite;
+	private AnimatedSprite _sprite;
+	//private AnimatedSprite _sprite;
 	private List<Animation> _animations;
 	
 	//private Action SpriteChanged 
@@ -31,7 +32,8 @@ public class Player : Entity
 		get => _movementSpeed;
 		set => _movementSpeed = value;
 	}
-	public Sprite Sprite
+	
+	public AnimatedSprite Sprite
 	{
 		get => _sprite;
 		private set
@@ -42,7 +44,7 @@ public class Player : Entity
 	}
 
 	//public Rectangle Hitbox => new Rectangle((int)(Position.X - Sprite.Origin.X), (int)(Position.Y - Sprite.Origin.Y), (int)Sprite.Width, (int)Sprite.Height);
-	public Rectangle Rect => new Rectangle((int)(Position.X), (int)(Position.Y), (int)Sprite.Width, (int)Sprite.Height);
+	public Rectangle Rect => new Rectangle((int)(Position.X), (int)(Position.Y), (int)_sprite.Width, (int)_sprite.Height);
 	public void Initialize()
 	{
 		Position = new Vector2(50, 50);
@@ -51,12 +53,13 @@ public class Player : Entity
 
 	public void LoadContent(TextureAtlas objectAtlas)
 	{
-		Sprite = objectAtlas.CreateSprite("player-1");
+		//Sprite = objectAtlas.CreateSprite("player-1");
+		_sprite = objectAtlas.CreateAnimatedSprite("player-walking-right");
 	}
 
 	public void Update(GameTime gameTime)
 	{
-		
+		_sprite.Update(gameTime);
 	}
 
 	public void Move(float xAmount, float yAmount, bool absolute = false)

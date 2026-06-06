@@ -44,6 +44,18 @@
 /processorParam:TextureFormat=Color
 /build:sprites/characters/player.png;sprites/objects/player
 
+#begin sprites/characters/player.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sprites/characters/player.png
+
 #begin sprites/objectAtlas-definition.xml
 /copy:sprites/objectAtlas-definition.xml
 
@@ -82,4 +94,7 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:sprites/player.png
+
+#begin sprites/playerAtlas-definition.xml
+/copy:sprites/playerAtlas-definition.xml
 
