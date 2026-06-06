@@ -101,7 +101,16 @@ public static class GameController
     
     public static bool ToggleDebug()
     {
-        return s_keyboard.WasKeyJustPressed(Keys.F11);
+        return s_keyboard.WasKeyJustPressed(Keys.F3);
+    }
+
+    public static bool DebugWatch()
+    {
+        return s_keyboard.WasKeyJustPressed(Keys.D1);
+    }
+    public static bool DebugFlags()
+    {
+        return s_keyboard.WasKeyJustPressed(Keys.D2);
     }
 }
 

@@ -20,7 +20,7 @@ public class Player : Entity
 	{
 		Initialize();
 	}
-	public Vector2 Position
+	public new Vector2 Position
 	{
 		get => _position;
 		set => _position = value;
@@ -57,6 +57,20 @@ public class Player : Entity
 	public void Update(GameTime gameTime)
 	{
 		
+	}
+
+	public void Move(float xAmount, float yAmount, bool absolute = false)
+	{
+		if (!absolute)
+		{
+			_position.X += xAmount;
+			_position.Y += yAmount;
+		}
+		else
+		{
+			_position.X = xAmount;
+			_position.Y = yAmount;
+		}
 	}
 
 	public void Draw(GameTime gameTime)

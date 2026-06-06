@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
-using RPGPrototype.Log;
 using RPGPrototype.Objects;
+using RPGPrototype.UI.Debug;
 
 namespace RPGPrototype.Scenes;
 
@@ -18,21 +15,25 @@ namespace RPGPrototype.Scenes;
 /// </summary>
 public class LevelObjectManager
 {
-	private Player _player;
+	private DebugMenu _debug;
 	
 	private LevelData _map;
+	
+	private Player _player;
+	
 
 	// Todo: Create a better atlas parser that can iterate frames without specifying the coords of each one
 	private TextureAtlas _objectAtlas;
 	
 	private int[,] _collisionGrid;
-	private Dictionary<int, Color> _collisionColors = new Dictionary<int, Color>();
+	private Dictionary<int, Color> _collisionColors = new();
 	private Rectangle _nextTravelCell;
 	private Color _nextTravelCellColor;
 
-	private List<Rectangle> _intersections;
-	public LevelObjectManager(LevelData map)
+	private List<Rectangle> _intersections = new();
+	public LevelObjectManager(DebugMenu debug, LevelData map)
 	{
+		_debug = debug;
 		Map = map;
 		Initialize();
 	}
@@ -52,11 +53,15 @@ public class LevelObjectManager
 	public void Initialize()
 	{
 		Player = new Player();
+		
 		_collisionGrid = LevelUtility.LoadIntGrid("Collision.csv", "Level_0");
 		_collisionColors.Add(0, Color.White);
 		_collisionColors.Add(1, Color.Red);
-
-		_intersections = new();
+		//To make the watch dynamic, you need to pass a lambda expression () => ....
+		//This creates a closure that captures the Player reference itself, forcing the program to evaluate Player.
+		//Position cleanly from scratch every single time the Draw loop invokes the delegate.
+		//_debug.Watch.RegisterWatch("player position", Player.Position.ToString);
+		_debug.Watch.RegisterWatch("player position", () => Player.Position.ToString());
 	}
 
 	public void LoadContent(ContentManager content)
@@ -64,44 +69,55 @@ public class LevelObjectManager
 		_objectAtlas = TextureAtlas.FromFile(content, "sprites/objectAtlas-definition.xml");
 		Player.LoadContent(_objectAtlas);
 	}
-
+	/// <summary>
+	/// Update entities and anything else that the object manager is responsible for.
+	/// </summary>
+	/// <param name="gameTime"></param>
+	/// <param name="dir"> The player movement direction given by the input manager </param>
 	public void Update(GameTime gameTime, Vector2 dir)
 	{
 		ValidateMovement(dir);
 		Player.Update(gameTime);
 	}
-
-
+	/// <summary>
+	/// Check for collisions before admitting a move
+	/// </summary>
+	/// <param name="movementDirection"> The direction of player movement </param>
 	public void ValidateMovement(Vector2 movementDirection)
 	{ 
 		// 1. Get intersecting tiles around the player (broad pass - don't want to check every tile)
 		// 2. Do finer, more precise check on player hitbox with surrounding tiles.
-		_intersections.Clear();
-		
 		int tileSize = Map.TileSize;
+		//_intersections.Clear(); don't know if this is needed
 		
-		 Player._position.X += (movementDirection.X * Player.Speed.X * Core.DT);
-		
-		_intersections = getIntersectingTilesHorizontal(Player.Rect);
-
+		// Check horizontal collisions ----------------------------------------
+		//float prospectiveMoveX = Player.Position.X + (movementDirection.X * Player.Speed.X * Core.DT);
+		Player.Move( movementDirection.X * Player.Speed.X * Core.DT, 0);
+		_intersections = GetIntersectingTilesHorizontal(Player.Rect);
 		foreach (var tile in _intersections)
 		{
 			if (_collisionGrid[tile.Y, tile.X] == 1)
 			{
+				// TODO: Potential fix to bug: Implement momentum and velocity slowdown, and then check 
+				// AND/OR: rewire with a prospective move framework.
+				// Currently the system only works based on the intersecting tiles and not the hitbox
 				if (movementDirection.X > 0.0f) // Moving right, lock player x to their width from the tile
 				{
-					Player._position.X = (tile.X * tileSize) - Player.Rect.Width; 
+					Player.Move( -(movementDirection.X * Player.Speed.X * Core.DT), 0);
+					//Player.Move((tile.X * tileSize) - Player.Rect.Width, Player.Position.Y, true);
+					//Player._position.X = (tile.X * tileSize) - Player.Rect.Width; 
 				} else if (movementDirection.X < 0.0f) // Moving left, lock player to right side of tile (+1 tile width)
 				{
-					Player._position.X = ((tile.X + 1) * tileSize); 
+					Player.Move( -(movementDirection.X * Player.Speed.X * Core.DT), 0);
+					//Player.Move(((tile.X + 1) * tileSize), Player.Position.Y, true);
+					//Player._position.X = ((tile.X + 1) * tileSize); 
 				}
 			}
 		}
 		
-		_intersections.Clear();
-		
-		Player._position.Y += (movementDirection.Y * Player.Speed.Y * Core.DT);
-		_intersections = getIntersectingTilesVertical(Player.Rect);
+		//_intersections.Clear();
+		Player.Move( 0, (movementDirection.Y * Player.Speed.Y * Core.DT));
+		_intersections = GetIntersectingTilesVertical(Player.Rect);
 		
 		foreach (var tile in _intersections)
 		{
@@ -109,17 +125,19 @@ public class LevelObjectManager
 			{
 				if (movementDirection.Y > 0.0f) // Moving down, lock player Y to one sprite height above
 				{
-					Player._position.Y = (tile.Y * tileSize) - Player.Rect.Height;
+					Player.Move(0, -(movementDirection.Y * Player.Speed.Y * Core.DT));
+					//Player._position.Y = (tile.Y * tileSize) - Player.Rect.Height;
 				} else if (movementDirection.Y < 0.0f) // Moving left, lock player to tile bottom (+1 tile height)
 				{
-					Player._position.Y = ((tile.Y + 1) * tileSize); 
+					Player.Move(0, -(movementDirection.Y * Player.Speed.Y * Core.DT));
+					//Player._position.Y = ((tile.Y + 1) * tileSize); 
 				}
 			}
 		}
 
 	}
 
-	public List<Rectangle> getIntersectingTilesHorizontal(Rectangle target)
+	public List<Rectangle> GetIntersectingTilesHorizontal(Rectangle target)
 	{
 		List<Rectangle> intersections = new();
 
@@ -143,7 +161,7 @@ public class LevelObjectManager
 
 		return intersections;
 	}
-	public List<Rectangle> getIntersectingTilesVertical(Rectangle target)
+	public List<Rectangle> GetIntersectingTilesVertical(Rectangle target)
 	{
 		List<Rectangle> intersections = new();
 
@@ -172,44 +190,49 @@ public class LevelObjectManager
 		int tileSize = Map.TileSize;
 		Texture2D rectangleTexture = new Texture2D(Core.GraphicsDevice, 1, 1);
 		rectangleTexture.SetData(new Color[] {new (255, 0, 0, 255)});
+		
+		foreach (var rect in _intersections)
+		{
+			//Core.SpriteBatch.Draw(rectangleTexture, new Rectangle((int) rect.X * tileSize, (int)rect.Y * tileSize, tileSize, tileSize), Color.White);
+			DrawRectHollow(new Rectangle((int) rect.X * tileSize, (int)rect.Y * tileSize, tileSize, tileSize));
+		}
 
-		for (int i = 0; i < Map.Height / tileSize; i++)
+		DrawRectHollow(Player.Rect);
+		Player.Draw(gameTime);
+		/*if (!_nextTravelCell.IsEmpty)
+		{
+			HighlightMovementCell();
+		}*/
+	}
+	/// <summary>
+	/// TODO: Implement and integrate with debug
+	/// </summary>
+	public void DrawCollisionGrid()
+	{
+		/*for (int i = 0; i < Map.Height / tileSize; i++)
 		{
 			for (int j = 0; j < Map.Width / tileSize; j++)
 			{
 				Core.SpriteBatch.Draw(rectangleTexture, new Rectangle((int) j * tileSize, (int) i * tileSize,
 					tileSize, tileSize),
 					_collisionColors[_collisionGrid[i, j]] * 0.3f);
+				//DrawRectHollow();
 			}
-		}
-		foreach (var rect in _intersections)
-		{
-
-			Core.SpriteBatch.Draw(rectangleTexture, new Rectangle((int) rect.X * tileSize, (int)rect.Y * tileSize, tileSize, tileSize), Color.White);
-		}
-		Player.DrawHitBox();
-
-
-		Player.Draw(gameTime);
-		if (!_nextTravelCell.IsEmpty)
-		{
-			HighlightMovementCell();
-		}
-	}
-
-	public void DrawCollisionGrid()
-	{
+		}*/
 		foreach (var tile in _collisionGrid)
 		{
 			
 		}
 	}
-	// TODO: Create better rectangle visualization assistance
+	/// <summary>
+	/// Helper method to draw the outline of a rectangle
+	/// </summary>
+	/// <param name="rect"> The rectangle to be outlined</param>
 	public void DrawRectHollow(Rectangle rect)
 	{
 		Texture2D rectangleTexture = new Texture2D(Core.GraphicsDevice, 1, 1);
 		rectangleTexture.SetData(new Color[] {new (255, 0, 0, 255)});
-		int thickness = 20;
+		int thickness = 1;
 		Core.SpriteBatch.Draw(
 			rectangleTexture,
 			new Rectangle(

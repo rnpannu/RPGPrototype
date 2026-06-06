@@ -5,11 +5,13 @@ using MonoGameLibrary;
 using MonoGameLibrary.Scenes;
 using RPGPrototype.Log;
 using RPGPrototype.Objects;
+using RPGPrototype.UI.Debug;
 
 namespace RPGPrototype.Scenes;
 
 public class LevelScene : Scene
 {
+	private DebugMenu _debug;
 	private LevelData _map;
 	private LevelCamera _camera;
 	private LevelInputManager _inputManager;
@@ -22,9 +24,10 @@ public class LevelScene : Scene
 	
 	public override void Initialize()
 	{
+		_debug = new DebugMenu();
 		_map = new LevelData(592, 448);
 		_camera = new LevelCamera(_map);
-		_objectManager = new LevelObjectManager(_map);
+		_objectManager = new LevelObjectManager(_debug, _map);
 		_inputManager = new LevelInputManager();
 		
 		base.Initialize();
@@ -39,6 +42,7 @@ public class LevelScene : Scene
 	{
 		_background = Content.Load<Texture2D>("maps/Map/simplified/Level_0/_composite");
 		_objectManager.LoadContent(Content);
+		_debug.LoadContent(Content.Load<SpriteFont>("File"));
 		base.LoadContent();
 	}
 
@@ -49,9 +53,10 @@ public class LevelScene : Scene
 		{
 			Reset();
 		}
-
+		
 		_inputManager.Update(gameTime);
 		_objectManager.Update(gameTime, _inputManager.CurrentMovementDirection);
+		_debug.Update(gameTime);
 		_camera.Follow(_objectManager.Player.Position);
 		base.Update(gameTime);
 	}
@@ -65,6 +70,10 @@ public class LevelScene : Scene
 		//_inputManager.Draw(gameTime);
 		_objectManager.Draw(gameTime);
 		
+		Core.SpriteBatch.End();
+		
+		Core.SpriteBatch.Begin();
+		_debug.Draw(gameTime);
 		Core.SpriteBatch.End();
 		base.Draw(gameTime);
 	}
