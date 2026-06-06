@@ -38,7 +38,8 @@ public class LevelObjectManager
 		Initialize();
 	}
 
-	public Player Player
+	public Player 
+		Player
 	{
 		get => _player;
 		private set => _player = value;
@@ -80,6 +81,7 @@ public class LevelObjectManager
 	public void Update(GameTime gameTime, Vector2 dir)
 	{
 		ValidateMovement(dir);
+		_player.updateAnimiation(dir);
 		Player.Update(gameTime);
 	}
 	/// <summary>
@@ -139,7 +141,7 @@ public class LevelObjectManager
 		}
 
 	}
-
+	
 	public List<Rectangle> GetIntersectingTilesHorizontal(Rectangle target)
 	{
 		List<Rectangle> intersections = new();

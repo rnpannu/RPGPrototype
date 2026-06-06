@@ -14,7 +14,7 @@ public class Player : Entity
 	private Vector2 _movementSpeed;
 	private AnimatedSprite _sprite;
 	//private AnimatedSprite _sprite;
-	private List<Animation> _animations;
+	private List<Animation> _animations = new();
 	
 	//private Action SpriteChanged 
 	public Player()
@@ -43,6 +43,45 @@ public class Player : Entity
 		} 
 	}
 
+	public void updateAnimiation(Vector2 movementDir)
+	{
+		Sprite.Effects = SpriteEffects.None;
+		if (Math.Abs(movementDir.Y) > Math.Abs(movementDir.X) * 1.5)
+		{
+			//UP
+			if (movementDir.Y < 0)
+			{
+				Sprite.Animation = _animations[0];
+			}
+			//Down
+			else
+			{
+				Sprite.Animation = _animations[1];
+			}
+		}
+
+		else
+		{
+			//Right
+			if (movementDir.X > 0)
+			{
+				Sprite.Animation = _animations[2];
+			}
+			//Left
+			else
+			{
+				
+				Sprite.Effects = SpriteEffects.FlipHorizontally;
+				Sprite.Animation = _animations[2];
+				
+			}
+		}
+	}
+
+	
+	
+	
+	
 	//public Rectangle Hitbox => new Rectangle((int)(Position.X - Sprite.Origin.X), (int)(Position.Y - Sprite.Origin.Y), (int)Sprite.Width, (int)Sprite.Height);
 	public Rectangle Rect => new Rectangle((int)(Position.X), (int)(Position.Y), (int)_sprite.Width, (int)_sprite.Height);
 	public void Initialize()
@@ -54,7 +93,11 @@ public class Player : Entity
 	public void LoadContent(TextureAtlas objectAtlas)
 	{
 		//Sprite = objectAtlas.CreateSprite("player-1");
+		_animations.Add(objectAtlas.GetAnimation("player-walking-up"));
+		_animations.Add(objectAtlas.GetAnimation("player-walking-down"));
+		_animations.Add(objectAtlas.GetAnimation("player-walking-right"));
 		_sprite = objectAtlas.CreateAnimatedSprite("player-walking-right");
+		
 	}
 
 	public void Update(GameTime gameTime)
