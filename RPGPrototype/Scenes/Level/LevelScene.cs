@@ -29,7 +29,7 @@ public class LevelScene : Scene
 		_camera = new LevelCamera(_map);
 		_objectManager = new LevelObjectManager(_debug, _map);
 		_inputManager = new LevelInputManager();
-		
+		_inputManager.MovementDirectionChange += _objectManager.Player.UpdateAnimation;
 		base.Initialize();
 	}
 
@@ -42,10 +42,16 @@ public class LevelScene : Scene
 	{
 		_background = Content.Load<Texture2D>("maps/Map/simplified/Level_0/_composite");
 		_objectManager.LoadContent(Content);
-		_debug.LoadContent(Content.Load<SpriteFont>("File"));
+		_debug.LoadContent(Content.Load<SpriteFont>("File")); // Change to better name
 		base.LoadContent();
 	}
 
+	public override void UnloadContent()
+	{
+		_inputManager.MovementDirectionChange -= _objectManager.Player.UpdateAnimation;
+		base.UnloadContent();
+	}
+	
 	public override void Update(GameTime gameTime)
 	{
 		// Temp
@@ -56,25 +62,35 @@ public class LevelScene : Scene
 		
 		_inputManager.Update(gameTime);
 		_objectManager.Update(gameTime, _inputManager.CurrentMovementDirection);
-		_debug.Update(gameTime);
 		_camera.Follow(_objectManager.Player.Position);
+		
+		_debug.Update(gameTime);
 		base.Update(gameTime);
 	}
 
 	public override void Draw(GameTime gameTime)
 	{
+		// Ideally would have 3 spritebatch begin/ends.
+		// 1. Background
+		// 2. Game objects
+		// 3. UI
+		// Actually, ideally it would only be one spritebatch begin/end cycle for the entire game,
+		// but this is a common convention.
 		Core.GraphicsDevice.Clear(new Color(32, 40, 78, 255));
+		// - Game Objects ---------------
 		Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _camera.GetTransform());
 
 		Core.SpriteBatch.Draw(_background, Vector2.Zero, Color.White);
-		//_inputManager.Draw(gameTime);
 		_objectManager.Draw(gameTime);
 		
-		Core.SpriteBatch.End();
+		Core.SpriteBatch.End(); // - End Game Objects ---------------
 		
-		Core.SpriteBatch.Begin();
+		
+		Core.SpriteBatch.Begin(); // - UI ----------
+		
 		_debug.Draw(gameTime);
-		Core.SpriteBatch.End();
+		
+		Core.SpriteBatch.End();  // - End UI -------
 		base.Draw(gameTime);
 	}
 }

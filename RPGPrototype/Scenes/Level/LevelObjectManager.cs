@@ -71,7 +71,6 @@ public class LevelObjectManager
 		TextureAtlas playerAtlas = TextureAtlas.FromFile(content, "sprites/playerAtlas-definition.xml");
 		Player.LoadContent(playerAtlas);
 		
-		
 	}
 	/// <summary>
 	/// Update entities and anything else that the object manager is responsible for.
@@ -81,7 +80,7 @@ public class LevelObjectManager
 	public void Update(GameTime gameTime, Vector2 dir)
 	{
 		ValidateMovement(dir);
-		_player.updateAnimiation(dir);
+		//Player.UpdateAnimation(dir);
 		Player.Update(gameTime);
 	}
 	/// <summary>
@@ -97,7 +96,7 @@ public class LevelObjectManager
 		
 		// Check horizontal collisions ----------------------------------------
 		//float prospectiveMoveX = Player.Position.X + (movementDirection.X * Player.Speed.X * Core.DT);
-		Player.Move( movementDirection.X * Player.Speed.X * Core.DT, 0);
+		Player.Move( movementDirection.X * Player.MovementSpeed.X * Core.DT, 0);
 		_intersections = GetIntersectingTilesHorizontal(Player.Rect);
 		foreach (var tile in _intersections)
 		{
@@ -108,12 +107,12 @@ public class LevelObjectManager
 				// Currently the system only works based on the intersecting tiles and not the hitbox
 				if (movementDirection.X > 0.0f) // Moving right, lock player x to their width from the tile
 				{
-					Player.Move( -(movementDirection.X * Player.Speed.X * Core.DT), 0);
+					Player.Move( -(movementDirection.X * Player.MovementSpeed.X * Core.DT), 0);
 					//Player.Move((tile.X * tileSize) - Player.Rect.Width, Player.Position.Y, true);
 					//Player._position.X = (tile.X * tileSize) - Player.Rect.Width; 
 				} else if (movementDirection.X < 0.0f) // Moving left, lock player to right side of tile (+1 tile width)
 				{
-					Player.Move( -(movementDirection.X * Player.Speed.X * Core.DT), 0);
+					Player.Move( -(movementDirection.X * Player.MovementSpeed.X * Core.DT), 0);
 					//Player.Move(((tile.X + 1) * tileSize), Player.Position.Y, true);
 					//Player._position.X = ((tile.X + 1) * tileSize); 
 				}
@@ -121,7 +120,7 @@ public class LevelObjectManager
 		}
 		
 		//_intersections.Clear();
-		Player.Move( 0, (movementDirection.Y * Player.Speed.Y * Core.DT));
+		Player.Move( 0, (movementDirection.Y * Player.MovementSpeed.Y * Core.DT));
 		_intersections = GetIntersectingTilesVertical(Player.Rect);
 		
 		foreach (var tile in _intersections)
@@ -130,11 +129,11 @@ public class LevelObjectManager
 			{
 				if (movementDirection.Y > 0.0f) // Moving down, lock player Y to one sprite height above
 				{
-					Player.Move(0, -(movementDirection.Y * Player.Speed.Y * Core.DT));
+					Player.Move(0, -(movementDirection.Y * Player.MovementSpeed.Y * Core.DT));
 					//Player._position.Y = (tile.Y * tileSize) - Player.Rect.Height;
 				} else if (movementDirection.Y < 0.0f) // Moving left, lock player to tile bottom (+1 tile height)
 				{
-					Player.Move(0, -(movementDirection.Y * Player.Speed.Y * Core.DT));
+					Player.Move(0, -(movementDirection.Y * Player.MovementSpeed.Y * Core.DT));
 					//Player._position.Y = ((tile.Y + 1) * tileSize); 
 				}
 			}

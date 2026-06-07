@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
 using RenderingLibrary.Graphics;
@@ -14,6 +15,8 @@ public class LevelInputManager
 	private Matrix _transform;
 	private Vector2 _movementDir;
 	private Vector2 _cameraPosition;
+
+	public event Action<Vector2> MovementDirectionChange;
 	
 	public LevelInputManager()
 	{
@@ -38,6 +41,7 @@ public class LevelInputManager
 
 	public void Update(GameTime gameTime)
 	{
+		Vector2 prevDir = _movementDir;
 		_movementDir = Vector2.Zero;
 		
 		if (GameController.MoveUp()) _movementDir.Y--;
@@ -48,6 +52,11 @@ public class LevelInputManager
 		if (_movementDir != Vector2.Zero)
 		{
 			_movementDir.Normalize();
+		}
+
+		if (_movementDir != prevDir)
+		{
+			MovementDirectionChange?.Invoke(_movementDir);
 		}
 	}
 	public void Draw(GameTime gameTime)

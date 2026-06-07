@@ -1,30 +1,33 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 
 namespace RPGPrototype.Objects;
 
 public abstract class Entity
 {
-	public Vector2 Position { get; protected set; }
-	public Sprite Sprite { get; protected set; }
-
-	public void Initialize()
+	public virtual Sprite Sprite { get; protected set; }
+	public virtual Vector2 Position { get; protected set; }
+	public virtual Vector2 MovementSpeed { get; protected set; }
+	public virtual Vector2 CurrentVelocity { get; protected set; }
+	
+	public virtual void Initialize()
 	{
-		throw new System.NotImplementedException();
+
 	}
 
-	public void LoadContent()
-	{
-		throw new System.NotImplementedException();
-	}
-
-	public void Update(GameTime gameTime)
-	{
-		throw new System.NotImplementedException();
-	}
-
-	public void Draw(GameTime gameTime)
+	public virtual void LoadContent()
 	{
 		
+	}
+
+	public virtual void Update(GameTime gameTime)
+	{
+
+	}
+
+	public virtual void Draw(GameTime gameTime)
+	{
+		Sprite.Draw(Core.SpriteBatch, Position);
 	}
 }
