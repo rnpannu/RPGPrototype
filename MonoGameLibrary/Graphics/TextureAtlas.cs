@@ -93,15 +93,12 @@ public class TextureAtlas
             {
                 XDocument doc = XDocument.Load(reader);
                 XElement root = doc.Root;
-
-
                 // The <Texture> element contains the content path for the Texture2D to load.
                 string texturePath = root.Element("Texture").Value;
                 atlas.Texture = content.Load<Texture2D>(texturePath);
 
                 var regions = root.Element("Regions")?.Elements("Region");
-
-
+                
                 if (regions != null)
                 {
                     foreach (var region in regions)

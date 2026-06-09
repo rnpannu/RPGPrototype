@@ -42,9 +42,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:sprites/characters/player.png;sprites/objects/player
+/build:sprites/characters/player.png
 
-#begin sprites/characters/player.png
+#begin sprites/characters/slime.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -54,7 +54,10 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:sprites/characters/player.png
+/build:sprites/characters/slime.png
+
+#begin sprites/enemyAtlas-definition.xml
+/copy:sprites/enemyAtlas-definition.xml
 
 #begin sprites/objectAtlas-definition.xml
 /copy:sprites/objectAtlas-definition.xml

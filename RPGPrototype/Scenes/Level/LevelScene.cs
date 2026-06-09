@@ -29,8 +29,15 @@ public class LevelScene : Scene
 		_camera = new LevelCamera(_map);
 		_objectManager = new LevelObjectManager(_debug, _map);
 		_inputManager = new LevelInputManager();
-		_inputManager.MovementDirectionChange += _objectManager.Player.UpdateAnimation;
+		
+		AssignEvents();
+		
 		base.Initialize();
+	}
+
+	public void AssignEvents()
+	{
+		_inputManager.MovementDirectionChange += _objectManager.Player.UpdateAnimation;
 	}
 
 	public void Reset()

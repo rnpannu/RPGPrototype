@@ -8,12 +8,7 @@ namespace RPGPrototype.UI.Debug;
 public class WatchPanel : DebugPanel
 {
 	private Dictionary<string, Func<string>> _watches = new ();
-
 	
-	/// <summary>Register a live variable. The getter is called each Draw.</summary>
-	public void Register(string name, Func<string> getter)
-		=> _watches.Add(name, getter);
-
 	public WatchPanel()
 	{
 	}
@@ -46,7 +41,14 @@ public class WatchPanel : DebugPanel
 
 
 	}
-
+/// <summary>
+/// Invoking a property or function as it is just returns a copy of the data/struct.
+/// To make the watch dynamic, you need to pass a lambda expression () => ....
+/// This creates a closure that captures the reference itself, forcing the program to evaluate
+/// the expression from scratch every single time the Draw loop invokes the delegate.
+/// </summary>
+/// <param name="key"> Name in key/value pair</param>
+/// <param name="getter"> Delegate for function getter </param>
 	public void RegisterWatch(string key, Func<string> getter)
 	{
 		_watches.Add(key, getter);

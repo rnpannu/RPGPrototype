@@ -17,20 +17,18 @@ public class LevelObjectManager
 {
 	private DebugMenu _debug;
 	
-	private LevelData _map;
-	
-	private Player _player;
-	
-
 	// Todo: Create a better atlas parser that can iterate frames without specifying the coords of each one
 	private TextureAtlas _objectAtlas;
 	
 	private int[,] _collisionGrid;
 	private Dictionary<int, Color> _collisionColors = new();
+	private List<Rectangle> _intersections = new();
+	
 	private Rectangle _nextTravelCell;
 	private Color _nextTravelCellColor;
 
-	private List<Rectangle> _intersections = new();
+	private List<Enemy> _enemies = new();
+	
 	public LevelObjectManager(DebugMenu debug, LevelData map)
 	{
 		_debug = debug;
@@ -38,30 +36,28 @@ public class LevelObjectManager
 		Initialize();
 	}
 
-	public Player 
-		Player
+	public Player Player
 	{
-		get => _player;
-		private set => _player = value;
+		get => field;
+		private set => field = value;
 	}
 
 	public LevelData Map
 	{
-		get => _map;
-		set => _map = value;
+		get => field;
+		private set => field = value;
 	}
 
 	public void Initialize()
 	{
-		Player = new Player();
+		Player = new Player(new Vector2(50, 50), new Vector2(100, 100));
+		Enemy slime = new Slime(new Vector2(100, 100), new Vector2(30, 30));
+		_enemies.Add(slime);
 		
 		_collisionGrid = LevelUtility.LoadIntGrid("Collision.csv", "Level_0");
 		_collisionColors.Add(0, Color.White);
 		_collisionColors.Add(1, Color.Red);
-		//To make the watch dynamic, you need to pass a lambda expression () => ....
-		//This creates a closure that captures the Player reference itself, forcing the program to evaluate Player.
-		//Position cleanly from scratch every single time the Draw loop invokes the delegate.
-		//_debug.Watch.RegisterWatch("player position", Player.Position.ToString);
+		
 		_debug.Watch.RegisterWatch("player position", () => Player.Position.ToString());
 	}
 
@@ -69,8 +65,14 @@ public class LevelObjectManager
 	{
 		_objectAtlas = TextureAtlas.FromFile(content, "sprites/objectAtlas-definition.xml");
 		TextureAtlas playerAtlas = TextureAtlas.FromFile(content, "sprites/playerAtlas-definition.xml");
+		// for enemy in json:
+		TextureAtlas enemyAtlas = TextureAtlas.FromFile(content, "sprites/enemyAtlas-definition.xml");
 		Player.LoadContent(playerAtlas);
-		
+
+		foreach (var enemy in _enemies)
+		{
+			enemy.LoadContent(enemyAtlas);
+		}
 	}
 	/// <summary>
 	/// Update entities and anything else that the object manager is responsible for.
@@ -80,21 +82,26 @@ public class LevelObjectManager
 	public void Update(GameTime gameTime, Vector2 dir)
 	{
 		ValidateMovement(dir);
-		//Player.UpdateAnimation(dir);
 		Player.Update(gameTime);
+		foreach (var enemy in _enemies)
+		{
+			enemy.Update(gameTime);
+		}
 	}
 	/// <summary>
-	/// Check for collisions before admitting a move
+	/// Check for collisions before admitting a move. Ideally works in 2 steps
+	/// 1. Get intersecting tiles around the player (broad pass - don't want to check every tile)
+	/// 2. Do finer, more precise check on player hitbox with surrounding tiles.
+	/// Currently the system does not do #2, will be implemented later.
 	/// </summary>
 	/// <param name="movementDirection"> The direction of player movement </param>
 	public void ValidateMovement(Vector2 movementDirection)
 	{ 
-		// 1. Get intersecting tiles around the player (broad pass - don't want to check every tile)
-		// 2. Do finer, more precise check on player hitbox with surrounding tiles.
 		int tileSize = Map.TileSize;
 		//_intersections.Clear(); don't know if this is needed
 		
 		// Check horizontal collisions ----------------------------------------
+		
 		//float prospectiveMoveX = Player.Position.X + (movementDirection.X * Player.Speed.X * Core.DT);
 		Player.Move( movementDirection.X * Player.MovementSpeed.X * Core.DT, 0);
 		_intersections = GetIntersectingTilesHorizontal(Player.Rect);
@@ -145,7 +152,7 @@ public class LevelObjectManager
 	{
 		List<Rectangle> intersections = new();
 
-		int tileSize = _map.TileSize;
+		int tileSize = Map.TileSize;
 		
 		// Get hitbox in tiles
 		int widthInTiles = (target.Width - (target.Width % tileSize)) / tileSize;
@@ -169,7 +176,7 @@ public class LevelObjectManager
 	{
 		List<Rectangle> intersections = new();
 
-		int tileSize = _map.TileSize;
+		int tileSize = Map.TileSize;
 		int widthInTiles = (target.Width - (target.Width % tileSize)) / tileSize;
 		int heightInTiles = (target.Height - (target.Height % tileSize)) / tileSize;
 
@@ -185,7 +192,6 @@ public class LevelObjectManager
 				));
 			}
 		}
-
 		return intersections;
 	}
 
@@ -200,8 +206,7 @@ public class LevelObjectManager
 			//Core.SpriteBatch.Draw(rectangleTexture, new Rectangle((int) rect.X * tileSize, (int)rect.Y * tileSize, tileSize, tileSize), Color.White);
 			DrawRectHollow(new Rectangle((int) rect.X * tileSize, (int)rect.Y * tileSize, tileSize, tileSize));
 		}
-
-		DrawRectHollow(Player.Rect);
+		DrawRectHollow(Player.Rect); // Draw player hitbox
 		Player.Draw(gameTime);
 		/*if (!_nextTravelCell.IsEmpty)
 		{

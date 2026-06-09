@@ -10,21 +10,20 @@ namespace RPGPrototype.Objects;
 
 public class Player : Entity
 {
+	public Player(Vector2 position, Vector2 movementSpeed) : base(position, movementSpeed)
+	{
+		
+	}
+
 	private AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
 	private List<Animation> _animations = new();
-
-	public Player()
-	{
-		Initialize();
-	}
 	
 	//public Rectangle Hitbox => new Rectangle((int)(Position.X - Sprite.Origin.X), (int)(Position.Y - Sprite.Origin.Y), (int)Sprite.Width, (int)Sprite.Height);
-	public Rectangle Rect => new Rectangle((int)(Position.X), (int)(Position.Y), (int)Sprite.Width, (int)Sprite.Height);
+	//public Rectangle Rect => new Rectangle((int) (Position.X), (int)(Position.Y), (int)Sprite.Width, (int)Sprite.Height);
 	
-	public void Initialize()
+	public override void Initialize()
 	{
-		Position = new Vector2(50, 50);
-		MovementSpeed = new Vector2(130, 130);
+		
 	}
 
 	public void LoadContent(TextureAtlas objectAtlas)
@@ -34,6 +33,7 @@ public class Player : Entity
 		_animations.Add(objectAtlas.GetAnimation("player-walking-down"));
 		_animations.Add(objectAtlas.GetAnimation("player-walking-right"));
 		Sprite =  objectAtlas.CreateAnimatedSprite("player-walking-right");
+
 	}
 	
 	/// <summary>
@@ -49,18 +49,18 @@ public class Player : Entity
 			{
 				AnimatedSprite.Animation = _animations[0];
 			}
-			else //Down
+			else // Down
 			{
 				AnimatedSprite.Animation = _animations[1];
 			}
 		}
 		else 
 		{
-			if (movementDir.X > 0) //Right
+			if (movementDir.X > 0) // Right
 			{
 				AnimatedSprite.Animation = _animations[2];
 			}
-			else //Left
+			else // Left
 			{
 				Sprite.Effects = SpriteEffects.FlipHorizontally;
 				AnimatedSprite.Animation = _animations[2];
@@ -69,7 +69,8 @@ public class Player : Entity
 	}
 	public override void Update(GameTime gameTime)
 	{
-		AnimatedSprite.Update(gameTime);
+		base.Update(gameTime);
+		//AnimatedSprite.Update(gameTime);
 	}
 	
 	/// <summary>
@@ -85,7 +86,8 @@ public class Player : Entity
 
 	public override void Draw(GameTime gameTime)
 	{
-		Sprite.Draw(Core.SpriteBatch, Position);
+		base.Draw(gameTime);
+		//Sprite.Draw(Core.SpriteBatch, Position);
 	}
 	
 	/// <summary>

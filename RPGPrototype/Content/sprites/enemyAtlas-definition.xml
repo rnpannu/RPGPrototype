@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TextureAtlas>
+    <Texture>sprites/characters/slime</Texture>
+    <Regions>
+        <Region name="slime-idle-1" x="0" y="0" width="16" height="16" />
+        <Region name="slime-idle-2" x="16" y="0" width="16" height="16" />
+        <Region name="slime-idle-3" x="32" y="0" width="16" height="16" />
+        <Region name="slime-idle-4" x="48" y="0" width="16" height="16" />
+        <Region name="slime-idle-5" x="64" y="0" width="16" height="16" />
+        <Region name="slime-idle-6" x="80" y="0" width="16" height="16" />
+    </Regions>
+    <Animations>
+        <Animation name="slime-idle" delay = "150">
+        <Frame region="slime-idle-1"/>
+        <Frame region="slime-idle-2"/>
+        <Frame region="slime-idle-3"/>
+        <Frame region="slime-idle-4"/>
+        <Frame region="slime-idle-5"/>
+        <Frame region="slime-idle-6"/>
+        </Animation>
+</Animations>
+</TextureAtlas>

@@ -14,6 +14,7 @@ public class Sprite
     public Vector2 Scale { get; set; } = Vector2.One;
 
     public Vector2 Origin { get; set; } = Vector2.Zero;
+    
     public SpriteEffects Effects { get; set; } = SpriteEffects.None;
 
     public float LayerDepth { get; set; }
@@ -41,10 +42,5 @@ public class Sprite
     {
         Region.Draw(spriteBatch, position, Color, Rotation, Origin, Scale, Effects, LayerDepth);
     }
-    /*public void Draw(SpriteBatch spriteBatch, Rectangle destRect)
-    {
-        Region.Draw(spriteBatch, destRect, Color);
-    }*/
-
-
+    
 }
