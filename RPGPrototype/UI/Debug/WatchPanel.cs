@@ -11,9 +11,10 @@ public class WatchPanel : DebugPanel
 	
 	public WatchPanel()
 	{
+
 	}
 
-	public void Update(GameTime gameTime)
+	public override void Update(GameTime gameTime)
 	{
 		
 	}
@@ -31,17 +32,17 @@ public class WatchPanel : DebugPanel
 			try   { val = pair.Value() ?? "<null>"; }
 			catch (Exception ex) { val = $"<err: {ex.GetType().Name}>"; }
 			
-			offset = DrawKVField((int)startPos.X, (int) (startPos.Y + (offset.Y)),
+			Vector2 blah = DrawKVField((int)startPos.X, (int) (startPos.Y + (offset.Y)),
 				_bgPanel.Width - _padding * 2
 				, _padding,
 				pair.Key, val);
-			offset.Y += _padding;
+			offset.Y += 26;
 		}
 		
 
 
 	}
-/// <summary>
+	/// <summary>
 /// Invoking a property or function as it is just returns a copy of the data/struct.
 /// To make the watch dynamic, you need to pass a lambda expression () => ....
 /// This creates a closure that captures the reference itself, forcing the program to evaluate
@@ -51,7 +52,7 @@ public class WatchPanel : DebugPanel
 /// <param name="getter"> Delegate for function getter </param>
 	public void RegisterWatch(string key, Func<string> getter)
 	{
-		_watches.Add(key, getter);
+		_watches.TryAdd(key, getter);
 	}
 	
 	// public void RemoveWatch(string key)

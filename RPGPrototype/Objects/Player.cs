@@ -89,16 +89,4 @@ public class Player : Entity
 		base.Draw(gameTime);
 		//Sprite.Draw(Core.SpriteBatch, Position);
 	}
-	
-	/// <summary>
-	/// Utility: Highlight the player's rectangle or hitbox
-	/// </summary>
-	public void DrawHitBox()
-	{
-		int tileSize = 16;
-		Texture2D rectangleTexture = new Texture2D(Core.GraphicsDevice, 1, 1);
-		rectangleTexture.SetData(new Color[] {new (255, 0, 0, 255)});
-		Core.SpriteBatch.Draw(rectangleTexture, Rect, Color.Lavender);
-	}
-
 }

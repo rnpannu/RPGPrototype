@@ -15,11 +15,16 @@ public class DebugMenu
 	private int _activePanel = 1;
 	
 	public WatchPanel Watch { get; private set; }
+	public FlagsPanel Flags { get; private set; }
+	
 	public DebugMenu()
 	{
 		_panels = new();
 		Watch = new WatchPanel();
+		Flags = new FlagsPanel();
 		_panels.Add(Watch);
+		_panels.Add(Flags);
+		
 	}
 
 	public void LoadContent(SpriteFont font)
@@ -47,6 +52,8 @@ public class DebugMenu
 			{
 				_activePanel = 2;
 			}
+
+			_panels[_activePanel - 1].Update(gameTime);
 		}
 	}
 

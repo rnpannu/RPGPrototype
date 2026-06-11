@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 
@@ -63,5 +64,16 @@ public abstract class Entity
 	public virtual void Draw(GameTime gameTime)
 	{
 		Sprite.Draw(Core.SpriteBatch, Position);
+	}
+
+	/// <summary>
+	/// Utility: Highlight the entity's rectangle or hitbox
+	/// </summary>
+	public void DrawHitBox()
+	{
+		int tileSize = 16;
+		Texture2D rectangleTexture = new Texture2D(Core.GraphicsDevice, 1, 1);
+		rectangleTexture.SetData(new Color[] {new (255, 0, 0, 255)});
+		Core.SpriteBatch.Draw(rectangleTexture, Rect, Color.Lavender);
 	}
 }
