@@ -51,8 +51,7 @@ public class Core : Game
     public static Matrix Scale { get; set; }
 
     public static Viewport Viewport { get; private set; }
-
-
+    
     public static bool Vsync { get; private set; } = true;
 
     public static float DT, FPS;

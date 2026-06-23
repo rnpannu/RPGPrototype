@@ -16,16 +16,17 @@ public class DebugMenu
 	
 	public WatchPanel Watch { get; private set; }
 	public FlagsPanel Flags { get; private set; }
-	
-	public DebugMenu()
+
+	private DebugMenu()
 	{
 		_panels = new();
 		Watch = new WatchPanel();
 		Flags = new FlagsPanel();
 		_panels.Add(Watch);
 		_panels.Add(Flags);
-		
 	}
+
+	public static DebugMenu Instance { get; } = new();
 
 	public void LoadContent(SpriteFont font)
 	{

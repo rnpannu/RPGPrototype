@@ -54,15 +54,16 @@ public class CollisionManager
 	/// Currently the system does not do #2, will be implemented later.
 	/// </summary>
 	/// <param name="movementDirection"> The direction of player movement </param>
-	public Vector2 ValidateMovement(Rectangle target, Vector2 movementDirection, Vector2 velocity)
+	public Vector2 ValidateMovement(Rectangle target, Vector2 movementDirection, Vector2 prospectiveMove)
 	{
+		// TODO: Remove movementdirection?
 		int tileSize = Map.TileSize;
 		bool xCollision = false;
 		bool yCollision = false;
 		
-		float prospectiveMoveX = (movementDirection.X * velocity.X * Core.DT);
+		//float prospectiveMoveX = (movementDirection.X * velocity.X * Core.DT);
 		_tileIntersections = GetIntersectingTilesHorizontal(
-			new Rectangle(target.X + (int)prospectiveMoveX, target.Y, target.Width, target.Height));
+			new Rectangle(target.X + (int) prospectiveMove.X, target.Y, target.Width, target.Height));
 
 		foreach (var tile in _tileIntersections)
 		{
@@ -89,9 +90,9 @@ public class CollisionManager
 			}
 		}
 		
-		float prospectiveMoveY = (movementDirection.Y * velocity.Y * Core.DT);
+		/*float prospectiveMoveY = (movementDirection.Y * velocity.Y * Core.DT);*/
 		_tileIntersections = GetIntersectingTilesVertical(new Rectangle(
-			target.X, target.Y + (int) prospectiveMoveY, target.Width, target.Height));
+			target.X, target.Y + (int) prospectiveMove.Y, target.Width, target.Height));
 		
 		foreach (var tile in _tileIntersections)
 		{
@@ -115,7 +116,7 @@ public class CollisionManager
 
 		//return new Vector2(prospectiveMoveX * xCollision, prospectiveMoveY * (int) yCollision);
 		// subtract target because Move() is already relative to the player's existing position
-		return new Vector2(xCollision ? 0 : prospectiveMoveX, yCollision ? 0 : prospectiveMoveY);
+		return new Vector2(xCollision ? 0 : prospectiveMove.X, yCollision ? 0 : prospectiveMove.Y);
 	}
 	
 	public List<Rectangle> GetIntersectingTilesHorizontal(Rectangle target)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
@@ -11,23 +12,19 @@ namespace RPGPrototype.Scenes;
 
 public class LevelScene : Scene
 {
-	private DebugMenu _debug;
 	private LevelData _map;
 	private LevelCamera _camera;
 	private LevelInputManager _inputManager;
 	private LevelObjectManager _objectManager;
-
-	private int[,] _collisionGrid;
-
+	
 	private Texture2D _background;
 
 	
 	public override void Initialize()
 	{
-		_debug = new DebugMenu();
 		_map = new LevelData(592, 448);
 		_camera = new LevelCamera(_map);
-		_objectManager = new LevelObjectManager(_debug, _map);
+		_objectManager = new LevelObjectManager(_map);
 		_inputManager = new LevelInputManager();
 		
 		AssignEvents();
@@ -49,7 +46,7 @@ public class LevelScene : Scene
 	{
 		_background = Content.Load<Texture2D>("maps/Map/simplified/Level_0/_composite");
 		_objectManager.LoadContent(Content);
-		_debug.LoadContent(Content.Load<SpriteFont>("File")); // Change to better name
+		
 		base.LoadContent();
 	}
 
@@ -71,7 +68,6 @@ public class LevelScene : Scene
 		_objectManager.Update(gameTime, _inputManager.CurrentMovementDirection);
 		_camera.Follow(_objectManager.Player.Position);
 		
-		_debug.Update(gameTime);
 		base.Update(gameTime);
 	}
 
@@ -94,9 +90,7 @@ public class LevelScene : Scene
 		
 		
 		Core.SpriteBatch.Begin(); // - UI ----------
-		
-		_debug.Draw(gameTime);
-		
+		DebugMenu.Instance.Draw(gameTime);
 		Core.SpriteBatch.End();  // - End UI -------
 		base.Draw(gameTime);
 	}

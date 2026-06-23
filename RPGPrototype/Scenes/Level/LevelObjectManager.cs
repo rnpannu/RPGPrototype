@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -24,9 +25,8 @@ public class LevelObjectManager
 
 	private bool _drawPlayer = true;
 	
-	public LevelObjectManager(DebugMenu debug, LevelData map)
+	public LevelObjectManager(LevelData map)
 	{
-		_debug = debug;
 		Map = map;
 		Collision = new CollisionManager(map);
 		
@@ -54,16 +54,24 @@ public class LevelObjectManager
 	public void Initialize()
 	{
 		Player = new Player(new Vector2(50, 50), new Vector2(100, 100));
+		Player.Initialize();
 		Enemy slime = new Slime(new Vector2(100, 100), new Vector2(30, 30));
 		
 		_enemies.Add(slime);
 		
-		_debug.Watch.RegisterWatch("player position", () => Player.Position.ToString());
-		_debug.Watch.RegisterWatch("slime postion", () => slime.Position.ToString());
-		_debug.Flags.RegisterFlag("Show Hitboxes" ,() => {
+		InitializeDebug();
+	}
+
+	public void InitializeDebug()
+	{
+		DebugMenu.Instance.Watch.RegisterWatch("player position", () => Player.Position.ToString());
+		//_debug.Watch.RegisterWatch("player position", () => Player.Position.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("slime postion", () => _enemies[0].Position.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("player state", () => Player.StateMachine.CurrentState.Name.ToString());
+		DebugMenu.Instance.Flags.RegisterFlag("Show Hitboxes" ,() => {
 			Collision.ShowHitboxes = !Collision.ShowHitboxes;
 		});
-		_debug.Flags.RegisterFlag("Draw Player" ,() => {
+		DebugMenu.Instance.Flags.RegisterFlag("Draw Player" ,() => {
 			_drawPlayer = !_drawPlayer;
 		});
 	}
@@ -80,33 +88,28 @@ public class LevelObjectManager
 			enemy.LoadContent(enemyAtlas);
 		}
 	}
+	
 	/// <summary>
 	/// Update entities and anything else that the object manager is responsible for.
 	/// </summary>
 	/// <param name="gameTime"></param>
 	/// <param name="dir"> The player movement direction given by the input manager </param>
-	public void Update(GameTime gameTime, Vector2 dir)
+	public void Update(GameTime gameTime, Vector2 inputDirection)
 	{
-		ValidateMovement(dir);
+		Player.MovementDirection = inputDirection;
 		Player.Update(gameTime);
+		Vector2 prospectiveMove = Player.MovementDirection * Player.Velocity * Core.DT;
+		//Vector2 prospectiveMove = new Vector2(inputDirection.X * Player.Velocity.X * Core.DT, inputDirection.Y * velocity.Y * Core.DT);
+		Vector2 validatedMove = Collision.ValidateMovement(Player.Rect, Player.MovementDirection, prospectiveMove);
+		
+		Player.Move(validatedMove.X, validatedMove.Y);
+		
 		foreach (var enemy in _enemies)
 		{
-			enemy.Update(gameTime);
+			enemy.Update(gameTime, Player.Position);
 		}
 	}
-	/// <summary>
-	/// Check for collisions before admitting a move. Ideally works in 2 steps
-	/// 1. Get intersecting tiles around the player (broad pass - don't want to check every tile)
-	/// 2. Do finer, more precise check on player hitbox with surrounding tiles.
-	/// Currently the system does not do #2, will be implemented later.
-	/// </summary>
-	/// <param name="movementDirection"> The direction of player movement </param>
-	public void ValidateMovement(Vector2 movementDirection)
-	{
-		Vector2 validatedMove = Collision.ValidateMovement(Player.Rect, movementDirection, Player.MovementSpeed);
-		Player.Move(validatedMove.X, validatedMove.Y);
-	}
-	
+
 	public void Draw(GameTime gameTime)
 	{
 		if (Collision.ShowHitboxes)
