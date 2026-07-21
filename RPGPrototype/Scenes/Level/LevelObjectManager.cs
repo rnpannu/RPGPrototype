@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -64,10 +64,14 @@ public class LevelObjectManager
 
 	public void InitializeDebug()
 	{
-		DebugMenu.Instance.Watch.RegisterWatch("player position", () => Player.Position.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("player position", () => Vector2.Round(Player.Position).ToString());
 		//_debug.Watch.RegisterWatch("player position", () => Player.Position.ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("slime postion", () => _enemies[0].Position.ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player state", () => Player.StateMachine.CurrentState.Name.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("player movement direction", () => Player.MovementDirection.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("player velocity", () => Vector2.Round(Player.Velocity).ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("player prospective move", () => Vector2.Round(Player.Velocity * Core.DT).ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("player prospective move2", () => Vector2.Round(Player.Position + (Player.Velocity * Core.DT)).ToString());
 		DebugMenu.Instance.Flags.RegisterFlag("Show Hitboxes" ,() => {
 			Collision.ShowHitboxes = !Collision.ShowHitboxes;
 		});
@@ -98,10 +102,15 @@ public class LevelObjectManager
 	{
 		Player.MovementDirection = inputDirection;
 		Player.Update(gameTime);
-		Vector2 prospectiveMove = Player.MovementDirection * Player.Velocity * Core.DT;
+		Vector2 prospectiveMove = Player.Velocity != Vector2.Zero 
+			? Vector2.Normalize(Player.Velocity) 
+			: Vector2.Zero;
+		//Vector2 prospectiveMove = Player.Velocity;
 		//Vector2 prospectiveMove = new Vector2(inputDirection.X * Player.Velocity.X * Core.DT, inputDirection.Y * velocity.Y * Core.DT);
-		Vector2 validatedMove = Collision.ValidateMovement(Player.Rect, Player.MovementDirection, prospectiveMove);
 		
+		Vector2 validatedMove = Collision.ValidateMovement(Player.Rect, prospectiveMove);
+		
+
 		Player.Move(validatedMove.X, validatedMove.Y);
 		
 		foreach (var enemy in _enemies)

@@ -11,7 +11,6 @@ public class PlayerIdleState : PlayerState
 	{
 
 	}
-
 	
 	public override void Update(GameTime gameTime)
 	{

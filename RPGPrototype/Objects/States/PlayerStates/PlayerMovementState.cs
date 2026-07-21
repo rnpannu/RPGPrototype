@@ -29,7 +29,7 @@ public class PlayerMovementState : PlayerState
 		Player.UpdateVelocity();
 		/*else if (input == Vector2.Zero)
 		{
-			Player.Velocity -= _acceleration * Core.DT;
+			Player.Velocity -= _acceleration * Core.DT\\\\\\\\\\\
 		}
 		else
 		{

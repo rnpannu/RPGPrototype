@@ -13,7 +13,7 @@ public abstract class Entity
 	public Entity(Vector2 position, Vector2 velocity)
 	{
 		Position = position;
-		Velocity = velocity;
+		//Velocity = velocity;
 		Velocity = Vector2.Zero;
 	}
 	

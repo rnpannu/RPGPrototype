@@ -54,24 +54,24 @@ public class CollisionManager
 	/// Currently the system does not do #2, will be implemented later.
 	/// </summary>
 	/// <param name="movementDirection"> The direction of player movement </param>
-	public Vector2 ValidateMovement(Rectangle target, Vector2 movementDirection, Vector2 prospectiveMove)
+	public Vector2 ValidateMovement(Rectangle target, Vector2 prospectiveMove)
 	{
 		// TODO: Remove movementdirection?
 		int tileSize = Map.TileSize;
 		bool xCollision = false;
 		bool yCollision = false;
-		
 		//float prospectiveMoveX = (movementDirection.X * velocity.X * Core.DT);
-		_tileIntersections = GetIntersectingTilesHorizontal(
-			new Rectangle(target.X + (int) prospectiveMove.X, target.Y, target.Width, target.Height));
-
+		// Prospective move is just the velocity
+		Rectangle prospectiveMoveX = new Rectangle(target.X + (int) prospectiveMove.X * 3, target.Y, target.Width, target.Height); // Magic number 3?
+		_tileIntersections = GetIntersectingTilesHorizontal(prospectiveMoveX);
+		
 		foreach (var tile in _tileIntersections)
 		{
 			if (_mapCollisionGrid[tile.Y, tile.X] == 1)
 			{
 				// TODO: Potential fix to bug: Implement momentum and velocity slowdown, and then check 
 				// Currently the system only works based on the intersecting tiles and not the hitbox
-				if (movementDirection.X != 0) // New: just don't permit a move if it results in a collision
+				if (prospectiveMoveX.Intersects(new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
 				{
 					xCollision = true;
 				} // Old: Reset player position if it results in a collion: can cause jittering
@@ -91,17 +91,21 @@ public class CollisionManager
 		}
 		
 		/*float prospectiveMoveY = (movementDirection.Y * velocity.Y * Core.DT);*/
-		_tileIntersections = GetIntersectingTilesVertical(new Rectangle(
-			target.X, target.Y + (int) prospectiveMove.Y, target.Width, target.Height));
+		Rectangle prospectiveMoveY = new Rectangle(target.X, target.Y + (int) prospectiveMove.Y * 3, target.Width, target.Height); // Magic number 3?
+		_tileIntersections = GetIntersectingTilesVertical(prospectiveMoveY);
 		
 		foreach (var tile in _tileIntersections)
 		{
 			if (_mapCollisionGrid[tile.Y, tile.X] == 1)
 			{
-				if (movementDirection.Y != 0)
+				if (prospectiveMoveY.Intersects(new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
 				{
 					yCollision = true;
 				}
+				/*if (prospectiveMove.Y != 0)
+				{
+					yCollision = true;
+				}*/
 				/*if (movementDirection.Y > 0.0f) // Moving down, lock player Y to one sprite height above
 				{
 					Player.Move(0, -(movementDirection.Y * Player.MovementSpeed.Y * Core.DT));
@@ -254,7 +258,7 @@ public class CollisionManager
 	/// <summary>
 	/// Helper function that highlights the player's movement direction callculation
 	/// </summary>
-	public void HighlightMovementCell()
+	/*public void HighlightMovementCell()
 	{
 		if (!(_nextTravelCell.IsEmpty))
 		{
@@ -262,5 +266,5 @@ public class CollisionManager
 				Map.TileSize, Map.TileSize);
 			Core.SpriteBatch.Draw(_pixelTexture, scaled, _nextTravelCellColor * 0.5f);
 		}
-	}
+	}*/
 }

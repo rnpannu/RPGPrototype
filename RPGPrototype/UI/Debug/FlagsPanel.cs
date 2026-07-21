@@ -68,6 +68,10 @@ namespace RPGPrototype.UI.Debug
             }
         }
 
+        public void Clear()
+        {
+            _actions.Clear();
+        }
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);

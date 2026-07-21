@@ -54,6 +54,10 @@ public class WatchPanel : DebugPanel
 	{
 		_watches.TryAdd(key, getter);
 	}
-	
+
+	public void ClearWatches()
+	{
+		_watches.Clear();
+	}
 	// public void RemoveWatch(string key)
 }

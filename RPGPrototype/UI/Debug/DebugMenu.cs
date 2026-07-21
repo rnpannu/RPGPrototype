@@ -58,6 +58,11 @@ public class DebugMenu
 		}
 	}
 
+	public void Clear()
+	{
+		Watch.ClearWatches();
+		Flags.Clear();
+	}
 	public void Draw(GameTime gameTime)
 	{
 		if (_visible)

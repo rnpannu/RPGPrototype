@@ -39,6 +39,7 @@ public class LevelScene : Scene
 
 	public void Reset()
 	{
+		DebugMenu.Instance.Clear();
 		Initialize();
 	}
 

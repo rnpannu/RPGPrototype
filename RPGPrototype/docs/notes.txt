@@ -1,0 +1,7 @@
+﻿1. When a player is moving towards a piece of collision, if they let go of the movement key
+the collision becomes permitted for some reason.
+
+2. [FIXED] Velocity not in the current movement direction is not decayed even if that movement key is not
+being being held
+
+3. Player sprite always goes to left facing one after letting go of movement key.

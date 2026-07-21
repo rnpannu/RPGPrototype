@@ -19,7 +19,8 @@ public class Player : Entity
 	
 	public Player(Vector2 position, Vector2 movementSpeed) : base(position, movementSpeed)
 	{
-		_maxVelocity = new Vector2(100, 100);
+		_maxVelocity = new Vector2(80, 80);
+		Acceleration = new Vector2(80, 80);
 	}
 
 	public StateMachine StateMachine
@@ -70,21 +71,55 @@ public class Player : Entity
 	
 	public void UpdateVelocity()
 	{
-		if (MovementDirection != Vector2.Zero)
+		if (Math.Abs(Velocity.X) < 0.01f)
 		{
-			Velocity += MovementDirection * Acceleration * Core.DT;
+			Velocity = new Vector2(0, Velocity.Y);
+		}
+		if (Math.Abs(Velocity.Y) < 0.01f)
+		{
+			Velocity = new Vector2(Velocity.X, 0);
+		}
+		
+		float accel =(float) Math.Pow((double)(Acceleration.X), 2) * Core.DT;
+		float velocityDecay = 50f * Core.DT; // Decays at around 3/frame i think
+		
+		if (MovementDirection.X != 0 && MovementDirection.Y != 0)
+		{
+			Velocity += MovementDirection * accel;
 			Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
 		}
 		else
 		{
-			Velocity = Vector2.Lerp(Velocity, Vector2.Zero, 10f * Core.DT);
-
-			if (Velocity.LengthSquared() < 0.01f)
+			float newX;
+			if (MovementDirection.X != 0)
 			{
-				Velocity = Vector2.Zero;
+				newX = Velocity.X + MovementDirection.X * accel;
 			}
+			else
+			{
+				newX = BasicLerp(Velocity.X, 0, velocityDecay);
+			}
+			float newY;
+			if (MovementDirection.Y != 0)
+			{
+				newY = Velocity.Y + MovementDirection.Y * accel;
+			}
+			else
+			{
+				newY = BasicLerp(Velocity.Y, 0, velocityDecay);
+			}
+			Velocity = Vector2.Clamp(new Vector2(newX, newY), -_maxVelocity, _maxVelocity);
 		}
+		
 	}
+	
+	public float BasicLerp(float start, float end, float t)
+	{
+		// Clamp t between 0 and 1 to prevent overshoot
+		t = Math.Clamp(t, 0f, 1f); 
+		return start + (end - start) * t;
+	}
+
 	
 	/// <summary>
 	/// Alter the Player's position by an amount, or force a move to an absolute position.
