@@ -69,6 +69,10 @@ public class Player : Entity
 		StateMachine.Update(gameTime);
 	}
 	
+	/// <summary>
+	/// Update velocity according to movement/input direciton, and decay it
+	/// if no movement is present.
+	/// </summary>
 	public void UpdateVelocity()
 	{
 		if (Math.Abs(Velocity.X) < 0.01f)
@@ -81,9 +85,9 @@ public class Player : Entity
 		}
 		
 		float accel =(float) Math.Pow((double)(Acceleration.X), 2) * Core.DT;
-		float velocityDecay = 50f * Core.DT; // Decays at around 3/frame i think
+		float velocityDecay = 50f * Core.DT; // Decays at 50 / second at 60fps? Math could be wrong
 		
-		if (MovementDirection.X != 0 && MovementDirection.Y != 0)
+		if (!GameUtils.IsZero(MovementDirection.X) && !GameUtils.IsZero(MovementDirection.Y))
 		{
 			Velocity += MovementDirection * accel;
 			Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
@@ -91,35 +95,27 @@ public class Player : Entity
 		else
 		{
 			float newX;
-			if (MovementDirection.X != 0)
+			if (!GameUtils.IsZero(MovementDirection.X))
 			{
 				newX = Velocity.X + MovementDirection.X * accel;
 			}
 			else
 			{
-				newX = BasicLerp(Velocity.X, 0, velocityDecay);
+				newX = GameUtils.BasicLerp(Velocity.X, 0, velocityDecay);
 			}
 			float newY;
-			if (MovementDirection.Y != 0)
+			if (!GameUtils.IsZero(MovementDirection.Y))
 			{
 				newY = Velocity.Y + MovementDirection.Y * accel;
 			}
 			else
 			{
-				newY = BasicLerp(Velocity.Y, 0, velocityDecay);
+				newY = GameUtils.BasicLerp(Velocity.Y, 0, velocityDecay);
 			}
 			Velocity = Vector2.Clamp(new Vector2(newX, newY), -_maxVelocity, _maxVelocity);
 		}
 		
 	}
-	
-	public float BasicLerp(float start, float end, float t)
-	{
-		// Clamp t between 0 and 1 to prevent overshoot
-		t = Math.Clamp(t, 0f, 1f); 
-		return start + (end - start) * t;
-	}
-
 	
 	/// <summary>
 	/// Alter the Player's position by an amount, or force a move to an absolute position.

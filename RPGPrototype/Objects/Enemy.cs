@@ -1,6 +1,7 @@
 ﻿using System.Xml;
 using Microsoft.Xna.Framework;
 using MonoGameLibrary.Graphics;
+using RPGPrototype.Objects.States;
 
 namespace RPGPrototype.Objects;
 
@@ -27,6 +28,11 @@ public class Enemy : Entity
 		
 	}
 
+	public virtual StateMachine StateMachine
+	{
+		get => field;
+		protected set => field = value;
+	}
 	public override void Initialize()
 	{
 		base.Initialize();
@@ -40,13 +46,17 @@ public class Enemy : Entity
 	public void Update(GameTime gameTime, Vector2 target)
 	{
 		base.Update(gameTime);
-		Pathfind(gameTime, target);
+		if (StateMachine != null)
+		{
+			StateMachine.Update(gameTime);
+		}
+		
 	}
 
-	public void Pathfind(GameTime gameTime, Vector2 target)
+	public bool CheckLOS(Vector2 target)
 	{
-		Vector2 delta = target - Position;
-		delta.Normalize();
+		Vector2 delta = Position - target;
+		return true;
 	}
 
 	public override void Draw(GameTime gameTime)

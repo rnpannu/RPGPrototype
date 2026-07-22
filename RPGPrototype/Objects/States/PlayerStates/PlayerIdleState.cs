@@ -15,7 +15,7 @@ public class PlayerIdleState : PlayerState
 	public override void Update(GameTime gameTime)
 	{
 		base.Update(gameTime);
-		if (Player.MovementDirection != Vector2.Zero)
+		if (Player.MovementDirection.LengthSquared() >= 0.01f)
 		{
 			Player.StateMachine.Transition(PlayerMovementState.StateName);
 			return;

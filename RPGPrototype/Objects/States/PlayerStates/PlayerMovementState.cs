@@ -21,7 +21,7 @@ public class PlayerMovementState : PlayerState
 		Vector2 input = Player.MovementDirection;
 		Vector2 speed = Player.Velocity;
 		
-		if (input == Vector2.Zero && speed == Vector2.Zero)
+		if (input.LengthSquared() < 0.01f && speed.LengthSquared() < 0.01f)
 		{
 			Player.StateMachine.Transition(PlayerIdleState.StateName);
 			return;
