@@ -1,0 +1,1 @@
+﻿1. Collision manager updates the player movmenent directly, maybe just have it set the velocity to 0

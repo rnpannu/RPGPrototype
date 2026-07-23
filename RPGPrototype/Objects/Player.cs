@@ -14,7 +14,6 @@ public class Player : Entity
 {
 	private readonly Vector2 _maxVelocity;
 	
-	private AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
 	private List<Animation> _animations = new();
 	
 	public Player(Vector2 position, Vector2 movementSpeed) : base(position, movementSpeed)
@@ -22,7 +21,9 @@ public class Player : Entity
 		_maxVelocity = new Vector2(80, 80);
 		Acceleration = new Vector2(80, 80);
 	}
-
+	
+	private AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
+	
 	public StateMachine StateMachine
 	{
 		get => field;
@@ -41,7 +42,6 @@ public class Player : Entity
 			}
 		}
 	}
-	
 	
 	public override void Initialize()
 	{
@@ -75,6 +75,7 @@ public class Player : Entity
 	/// </summary>
 	public void UpdateVelocity()
 	{
+		// Potentially want to refactor into movement state, only retaining decay logic
 		if (Math.Abs(Velocity.X) < 0.01f)
 		{
 			Velocity = new Vector2(0, Velocity.Y);
@@ -84,7 +85,7 @@ public class Player : Entity
 			Velocity = new Vector2(Velocity.X, 0);
 		}
 		
-		float accel =(float) Math.Pow((double)(Acceleration.X), 2) * Core.DT;
+		float accel = (float) Math.Pow ((double)(Acceleration.X), 2) * Core.DT;
 		float velocityDecay = 50f * Core.DT; // Decays at 50 / second at 60fps? Math could be wrong
 		
 		if (!GameUtils.IsZero(MovementDirection.X) && !GameUtils.IsZero(MovementDirection.Y))

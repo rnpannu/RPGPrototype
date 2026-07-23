@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using RPGPrototype.Objects.States;
 using RPGPrototype.Objects.States.SlimeStates;
@@ -30,17 +32,31 @@ public class Slime : Enemy
 	{
 		Sprite = objectAtlas.CreateAnimatedSprite("slime-idle");
 	}
-	
-	public void Pathfind(GameTime gameTime, Vector2 target)
-	{
-		Vector2 delta = target - Position;
-		delta.Normalize();
-	}
 
 	public override void Update(GameTime gameTime)
 	{
 		base.Update(gameTime);
+		Position += Velocity;
 	}
+	public void Follow(GameTime gameTime, Vector2 target)
+	{
+		Vector2 delta = target - Position;
+		if (!GameUtils.IsZeroVector(delta))
+		{
+			MovementDirection = Vector2.Normalize(delta);
+			UpdateVelocity(gameTime);
+		}
+		
+	}
+
+	public void UpdateVelocity(GameTime gameTime)
+	{
+		float accel = (float) Math.Pow ((double)(Acceleration.X), 2) * Core.DT;
+		Velocity += MovementDirection * accel;
+		Velocity = Vector2.Clamp(Velocity, new Vector2(-100, -100), new Vector2(100,100));
+		//Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
+	}
+	
 
 	public override void Draw(GameTime gameTime)
 	{

@@ -27,15 +27,6 @@ public class PlayerMovementState : PlayerState
 			return;
 		} 
 		Player.UpdateVelocity();
-		/*else if (input == Vector2.Zero)
-		{
-			Player.Velocity -= _acceleration * Core.DT\\\\\\\\\\\
-		}
-		else
-		{
-			Player.Velocity += input * _acceleration * Core.DT;
-			Player.Velocity = Vector2.Clamp(Player.Velocity, -_maxVelocity, _maxVelocity);
-		}#1#*/
-		
+
 	}
 }
