@@ -26,7 +26,7 @@ public class PlayerMovementState : PlayerState
 			Player.StateMachine.Transition(PlayerIdleState.StateName);
 			return;
 		} 
-		Player.UpdateVelocity();
+		Player.UpdateVelocity(gameTime);
 
 	}
 }

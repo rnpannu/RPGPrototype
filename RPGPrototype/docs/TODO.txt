@@ -1,9 +1,17 @@
 ﻿1. When a player is moving towards a piece of collision, if they let go of the movement key
 the collision becomes permitted for some reason.
 
-2. Refactor player acceleration logic.
+2. Collision: Velocity only vs forced move, observe quirks
+    
+    Forced move, exact increment: Wall sliding inconsistent 
+    Forced move, x3 increment: Not 100% consistent sliding either. Hitbox too far but occasionaly permitted
+    Velocity only, exact increment: 
+    Velocity only, x3 increment: 
+    
+    -> Devise a system that returns player positions to within bounds range?
+        - Potential jittering
+    -> How to make current detection system more robust.
+    
+4. Player sprite always goes to left facing one after letting go of movement key.
 
-2. [FIXED] Velocity not in the current movement direction is not decayed even if that movement key is not
-being being held
-
-3. Player sprite always goes to left facing one after letting go of movement key.
+5. Improve state logic handling dispersion

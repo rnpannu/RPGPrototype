@@ -1,3 +1,1 @@
 ﻿1. Should use local injected delta time as opposed to Core.DT in most instances I think
-
-2. Create a vector 2 wrapper that 

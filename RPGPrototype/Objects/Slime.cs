@@ -10,9 +10,10 @@ namespace RPGPrototype.Objects;
 
 public class Slime : Enemy
 {
-	public Slime(Vector2 position, Vector2 movementSpeed) : base(position, movementSpeed)
+	public Slime(Vector2 position) : base(position)
 	{
-		Acceleration = new Vector2(10, 10);
+		_maxVelocity = new Vector2(30, 30);
+		Acceleration = new Vector2(1, 1);
 	}
 
 	public AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
@@ -43,7 +44,7 @@ public class Slime : Enemy
 	public void Follow(GameTime gameTime, Vector2 target)
 	{
 		Vector2 delta = target - Position;
-		if (!GameUtils.IsZeroVector(delta))
+		if (!delta.IsZero())
 		{
 			MovementDirection = Vector2.Normalize(delta);
 			UpdateVelocity(gameTime);
@@ -53,10 +54,8 @@ public class Slime : Enemy
 
 	public void UpdateVelocity(GameTime gameTime)
 	{
-		float accel = (float) Math.Pow ((double)(Acceleration.X), 2) * Core.DT;
-		Velocity += MovementDirection * accel * (float)gameTime.ElapsedGameTime.TotalSeconds;
-		Velocity = Vector2.Clamp(Velocity, new Vector2(-50, -50), new Vector2(50,50));
-		//Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
+		Velocity += MovementDirection * Acceleration * (float)gameTime.ElapsedGameTime.TotalSeconds;
+		Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
 	}
 	
 

@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace MonoGameLibrary;
 
-public static class public_static_class_Vector2Extensions
+public static class Vector2Extensions
 {
 	private const float DefaultEpsilon = 1e-3f; // 0.001
 

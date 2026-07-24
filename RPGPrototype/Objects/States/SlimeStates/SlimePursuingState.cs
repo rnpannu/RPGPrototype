@@ -15,7 +15,7 @@ public class SlimePursuingState : SlimeState
 	public override void Update(GameTime gameTime)
 	{
 		base.Update(gameTime);
-		if (GameUtils.IsZeroVector(Slime.Velocity))
+		if (Slime.Velocity.IsZero())
 		{
 			Slime.StateMachine.Transition(SlimeIdleState.StateName);
 		}

@@ -12,14 +12,12 @@ namespace RPGPrototype.Objects;
 
 public class Player : Entity
 {
-	private readonly Vector2 _maxVelocity;
-	
 	private AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
 	private List<Animation> _animations = new();
 	
-	public Player(Vector2 position, Vector2 movementSpeed) : base(position, movementSpeed)
+	public Player(Vector2 position) : base(position)
 	{
-		_maxVelocity = new Vector2(80, 80);
+		_maxVelocity = new Vector2(100, 100);
 		Acceleration = new Vector2(80, 80);
 	}
 
@@ -72,38 +70,30 @@ public class Player : Entity
 	/// <summary>
 	/// Increase or decay velocity according to current movement input.
 	/// </summary>
-	public void UpdateVelocity()
+	public void UpdateVelocity(GameTime gameTime)
 	{
 		// Potentially want to refactor into movement state
-		float accel = (float)Math.Pow((double)(Acceleration.X), 2) * Core.DT;
-		float velocityDecay = 50f * Core.DT; // Decays at 50 / second at 60fps? Math could be wrong
+		float accel = (float)Math.Pow((double)(Acceleration.X), 2) * Core.DT; // Make everything linear
+		float velocityDecay = 50f * (float) gameTime.ElapsedGameTime.TotalSeconds; // Decays at 50 / second at 60fps? Math could be wrong
 
 		if (!MovementDirection.IsZeroX() && !MovementDirection.IsZeroY())
 		{
-			Velocity += MovementDirection * accel;
+			Velocity += MovementDirection * Acceleration; //* (float) gameTime.ElapsedGameTime.TotalSeconds;
 			Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
 		}
 		else
 		{
 			float newX = !MovementDirection.IsZeroX()
-				? Velocity.X + MovementDirection.X * accel
+				? Velocity.X + MovementDirection.X * Acceleration.X //* (float)gameTime.ElapsedGameTime.TotalSeconds)
 				: GameUtils.BasicLerp(Velocity.X, 0, velocityDecay);
 
 			float newY = !MovementDirection.IsZeroY()
-				? Velocity.Y + MovementDirection.Y * accel
+				? Velocity.Y + MovementDirection.Y * Acceleration.Y //* (float) gameTime.ElapsedGameTime.TotalSeconds
 				: GameUtils.BasicLerp(Velocity.Y, 0, velocityDecay);
 			
 			Velocity = Vector2.Clamp(new Vector2(newX, newY), -_maxVelocity, _maxVelocity);
 		}
 	}
-
-	public float BasicLerp(float start, float end, float t)
-	{
-		// Clamp t between 0 and 1 to prevent overshoot
-		t = Math.Clamp(t, 0f, 1f); 
-		return start + (end - start) * t;
-	}
-
 	
 	/// <summary>
 	/// Alter the Player's position by an amount, or force a move to an absolute position.
@@ -114,6 +104,11 @@ public class Player : Entity
 	public void Move(float xAmount, float yAmount, bool absolute = false)
 	{
 		Position = !absolute ? new Vector2(Position.X + xAmount, Position.Y + yAmount) : new Vector2(xAmount, yAmount);
+	}
+
+	public void Move()
+	{
+		Position += Velocity * Core.DT;
 	}
 	
 	/// <summary>

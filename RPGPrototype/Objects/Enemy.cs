@@ -23,7 +23,7 @@ public class Enemy : Entity
 	// last pursue tile index
 	private Vector2 _acceleration;
 	
-	public Enemy(Vector2 position, Vector2 movementSpeed) : base(position, movementSpeed)
+	public Enemy(Vector2 position) : base(position)
 	{
 		
 	}
@@ -53,11 +53,13 @@ public class Enemy : Entity
 		
 	}
 
+	/*
 	public bool CheckLOS(Vector2 target)
 	{
 		Vector2 delta = Position - target;
 		return true;
 	}
+	*/
 
 	public override void Draw(GameTime gameTime)
 	{

@@ -20,6 +20,6 @@ public class PlayerIdleState : PlayerState
 			Player.StateMachine.Transition(PlayerMovementState.StateName);
 			return;
 		}
-		Player.UpdateVelocity(); // still allow deceleration
+		Player.UpdateVelocity(gameTime); // still allow deceleration
 	}
 }

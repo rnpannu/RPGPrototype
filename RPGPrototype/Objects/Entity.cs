@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Specialized;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
@@ -10,11 +11,11 @@ public abstract class Entity
 	/*private int _baseMaxHealth;
 	private Vector2 _baseMovementSpeed;*/
 	
-	public Entity(Vector2 position, Vector2 velocity)
+	protected Vector2 _maxVelocity;
+	
+	public Entity(Vector2 position)
 	{
 		Position = position;
-		//Velocity = velocity;
-		Velocity = Vector2.Zero;
 	}
 	
 	public virtual Sprite Sprite
@@ -61,8 +62,7 @@ public abstract class Entity
 	
 	public virtual void Initialize()
 	{
-		Position = new Vector2(250, 250);
-		Velocity = new Vector2(10, 10);
+
 	}
 
 	public virtual void LoadContent()

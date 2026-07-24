@@ -60,8 +60,7 @@ public class CollisionManager
 		int tileSize = Map.TileSize;
 		bool xCollision = false;
 		bool yCollision = false;
-		//float prospectiveMoveX = (movementDirection.X * velocity.X * Core.DT);
-		// Prospective move is just the velocity
+
 		Rectangle prospectiveMoveX = new Rectangle(target.X + (int) prospectiveMove.X * 3, target.Y, target.Width, target.Height); // Magic number 3?
 		_tileIntersections = GetIntersectingTilesHorizontal(prospectiveMoveX);
 		
@@ -69,29 +68,15 @@ public class CollisionManager
 		{
 			if (_mapCollisionGrid[tile.Y, tile.X] == 1)
 			{
-				// TODO: Potential fix to bug: Implement momentum and velocity slowdown, and then check 
-				// Currently the system only works based on the intersecting tiles and not the hitbox
 				if (prospectiveMoveX.Intersects(new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
 				{
 					xCollision = true;
-				} // Old: Reset player position if it results in a collion: can cause jittering
-				/*if (movementDirection.X > 0.0f) // Moving right, lock player x to their width from the tile
-				{
-					Player.Move(-(movementDirection.X * Player.MovementSpeed.X * Core.DT), 0);
-					//Player.Move((tile.X * tileSize) - Player.Rect.Width, Player.Position.Y, true);
-					//Player._position.X = (tile.X * tileSize) - Player.Rect.Width; 
-				}
-				else if (movementDirection.X < 0.0f) // Moving left, lock player to right side of tile (+1 tile width)
-				{
-					Player.Move(-(movementDirection.X * Player.MovementSpeed.X * Core.DT), 0);
-					//Player.Move(((tile.X + 1) * tileSize), Player.Position.Y, true);
-					//Player._position.X = ((tile.X + 1) * tileSize); 
-				}*/
+				} 
 			}
 		}
 		
-		/*float prospectiveMoveY = (movementDirection.Y * velocity.Y * Core.DT);*/
 		Rectangle prospectiveMoveY = new Rectangle(target.X, target.Y + (int) prospectiveMove.Y * 3, target.Width, target.Height); // Magic number 3?
+		
 		_tileIntersections = GetIntersectingTilesVertical(prospectiveMoveY);
 		
 		foreach (var tile in _tileIntersections)
@@ -102,24 +87,9 @@ public class CollisionManager
 				{
 					yCollision = true;
 				}
-				/*if (prospectiveMove.Y != 0)
-				{
-					yCollision = true;
-				}*/
-				/*if (movementDirection.Y > 0.0f) // Moving down, lock player Y to one sprite height above
-				{
-					Player.Move(0, -(movementDirection.Y * Player.MovementSpeed.Y * Core.DT));
-					//Player._position.Y = (tile.Y * tileSize) - Player.Rect.Height;
-				} else if (movementDirection.Y < 0.0f) // Moving left, lock player to tile bottom (+1 tile height)
-				{
-					Player.Move(0, -(movementDirection.Y * Player.MovementSpeed.Y * Core.DT));
-					//Player._position.Y = ((tile.Y + 1) * tileSize); 
-				}*/
 			}
 		}
-
-		//return new Vector2(prospectiveMoveX * xCollision, prospectiveMoveY * (int) yCollision);
-		// subtract target because Move() is already relative to the player's existing position
+		
 		return new Vector2(xCollision ? 0 : prospectiveMove.X, yCollision ? 0 : prospectiveMove.Y);
 	}
 	

@@ -53,9 +53,9 @@ public class LevelObjectManager
 
 	public void Initialize()
 	{
-		Player = new Player(new Vector2(50, 50), new Vector2(100, 100));
+		Player = new Player(new Vector2(50, 50));
 		Player.Initialize();
-		Enemy slime = new Slime(new Vector2(100, 100), new Vector2(30, 30));
+		Enemy slime = new Slime(new Vector2(100, 100));
 		
 		_enemies.Add(slime);
 		
@@ -101,18 +101,14 @@ public class LevelObjectManager
 	public void Update(GameTime gameTime, Vector2 inputDirection)
 	{
 		Player.MovementDirection = inputDirection;
-		
 		Player.Update(gameTime);
-
-		//Vector2 prospectiveMove = Player.MovementDirection * Player.Velocity * (float) gameTime.ElapsedGameTime.TotalSeconds;
 		
-		Vector2 prospectiveMove = Player.Velocity != Vector2.Zero 
-			? Vector2.Normalize(Player.Velocity) 
-			: Vector2.Zero;
-
+		Vector2 prospectiveMove = (Player.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
 		Vector2 validatedMove = Collision.ValidateMovement(Player.Rect, prospectiveMove);
 		
 		Player.Move(validatedMove.X, validatedMove.Y);
+		//if (!validatedMove.IsZero()) Player.Move();
+		
 		
 		foreach (var enemy in _enemies)
 		{
