@@ -35,13 +35,21 @@ public abstract class Entity
 			field = value;
 		}
 	}
-	public virtual Vector2 MovementDirection { get; set; }
+	public virtual Vector2 MovementDirection { get; 
+		set => field = value.SnapToZero(); }
 	
-	public virtual Vector2 FacingDirection { get; set; }
+	public virtual Vector2 FacingDirection { get;
+		set => field = value.SnapToZero();
+	}
+
+	public virtual Vector2 Velocity
+	{
+		get;
+		set => field = value.SnapToZero();
+	}
 	
-	public virtual Vector2 Velocity { get; set; }
-	
-	public virtual Vector2 Acceleration { get; set; }
+	public virtual Vector2 Acceleration { get; 
+		set => field = value.SnapToZero(); }
 	
 	public virtual Rectangle Rect =>
 		new Rectangle((int)(Position.X - Sprite.Origin.X),

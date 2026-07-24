@@ -14,6 +14,7 @@ public class Player : Entity
 {
 	private readonly Vector2 _maxVelocity;
 	
+	private AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
 	private List<Animation> _animations = new();
 	
 	public Player(Vector2 position, Vector2 movementSpeed) : base(position, movementSpeed)
@@ -21,9 +22,7 @@ public class Player : Entity
 		_maxVelocity = new Vector2(80, 80);
 		Acceleration = new Vector2(80, 80);
 	}
-	
-	private AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
-	
+
 	public StateMachine StateMachine
 	{
 		get => field;
@@ -35,13 +34,14 @@ public class Player : Entity
 		get => field;
 		set
 		{ 
-			field = value; // Input direction
+			field = value.SnapToZero(); // Input direction
 			if (field != Vector2.Zero)
 			{
 				FacingDirection = field;
 			}
 		}
 	}
+	
 	
 	public override void Initialize()
 	{
@@ -70,53 +70,40 @@ public class Player : Entity
 	}
 	
 	/// <summary>
-	/// Update velocity according to movement/input direciton, and decay it
-	/// if no movement is present.
+	/// Increase or decay velocity according to current movement input.
 	/// </summary>
 	public void UpdateVelocity()
 	{
-		// Potentially want to refactor into movement state, only retaining decay logic
-		if (Math.Abs(Velocity.X) < 0.01f)
-		{
-			Velocity = new Vector2(0, Velocity.Y);
-		}
-		if (Math.Abs(Velocity.Y) < 0.01f)
-		{
-			Velocity = new Vector2(Velocity.X, 0);
-		}
-		
-		float accel = (float) Math.Pow ((double)(Acceleration.X), 2) * Core.DT;
+		// Potentially want to refactor into movement state
+		float accel = (float)Math.Pow((double)(Acceleration.X), 2) * Core.DT;
 		float velocityDecay = 50f * Core.DT; // Decays at 50 / second at 60fps? Math could be wrong
-		
-		if (!GameUtils.IsZero(MovementDirection.X) && !GameUtils.IsZero(MovementDirection.Y))
+
+		if (!MovementDirection.IsZeroX() && !MovementDirection.IsZeroY())
 		{
 			Velocity += MovementDirection * accel;
 			Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
 		}
 		else
 		{
-			float newX;
-			if (!GameUtils.IsZero(MovementDirection.X))
-			{
-				newX = Velocity.X + MovementDirection.X * accel;
-			}
-			else
-			{
-				newX = GameUtils.BasicLerp(Velocity.X, 0, velocityDecay);
-			}
-			float newY;
-			if (!GameUtils.IsZero(MovementDirection.Y))
-			{
-				newY = Velocity.Y + MovementDirection.Y * accel;
-			}
-			else
-			{
-				newY = GameUtils.BasicLerp(Velocity.Y, 0, velocityDecay);
-			}
+			float newX = !MovementDirection.IsZeroX()
+				? Velocity.X + MovementDirection.X * accel
+				: GameUtils.BasicLerp(Velocity.X, 0, velocityDecay);
+
+			float newY = !MovementDirection.IsZeroY()
+				? Velocity.Y + MovementDirection.Y * accel
+				: GameUtils.BasicLerp(Velocity.Y, 0, velocityDecay);
+			
 			Velocity = Vector2.Clamp(new Vector2(newX, newY), -_maxVelocity, _maxVelocity);
 		}
-		
 	}
+
+	public float BasicLerp(float start, float end, float t)
+	{
+		// Clamp t between 0 and 1 to prevent overshoot
+		t = Math.Clamp(t, 0f, 1f); 
+		return start + (end - start) * t;
+	}
+
 	
 	/// <summary>
 	/// Alter the Player's position by an amount, or force a move to an absolute position.
