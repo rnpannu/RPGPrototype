@@ -43,7 +43,7 @@ public class Enemy : Entity
 		
 	}
 
-	public void Update(GameTime gameTime, Vector2 target)
+	public virtual void Update(GameTime gameTime, Vector2 target)
 	{
 		base.Update(gameTime);
 		if (StateMachine != null)

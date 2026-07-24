@@ -12,7 +12,7 @@ public class Slime : Enemy
 {
 	public Slime(Vector2 position, Vector2 movementSpeed) : base(position, movementSpeed)
 	{
-		
+		Acceleration = new Vector2(10, 10);
 	}
 
 	public AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
@@ -33,11 +33,13 @@ public class Slime : Enemy
 		Sprite = objectAtlas.CreateAnimatedSprite("slime-idle");
 	}
 
-	public override void Update(GameTime gameTime)
+	public override void Update(GameTime gameTime, Vector2 target)
 	{
 		base.Update(gameTime);
+		Follow(gameTime, target);
 		Position += Velocity;
 	}
+	
 	public void Follow(GameTime gameTime, Vector2 target)
 	{
 		Vector2 delta = target - Position;
@@ -52,8 +54,8 @@ public class Slime : Enemy
 	public void UpdateVelocity(GameTime gameTime)
 	{
 		float accel = (float) Math.Pow ((double)(Acceleration.X), 2) * Core.DT;
-		Velocity += MovementDirection * accel;
-		Velocity = Vector2.Clamp(Velocity, new Vector2(-100, -100), new Vector2(100,100));
+		Velocity += MovementDirection * accel * (float)gameTime.ElapsedGameTime.TotalSeconds;
+		Velocity = Vector2.Clamp(Velocity, new Vector2(-50, -50), new Vector2(50,50));
 		//Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
 	}
 	
