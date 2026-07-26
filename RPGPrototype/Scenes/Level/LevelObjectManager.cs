@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -50,12 +51,14 @@ public class LevelObjectManager
 		get => field;
 		private set => field = value;
 	}
+	
+	public bool CanSlimeSee { get; private set; }
 
 	public void Initialize()
 	{
 		Player = new Player(new Vector2(50, 50));
 		Player.Initialize();
-		Enemy slime = new Slime(new Vector2(100, 100));
+		Enemy slime = new Slime(new Vector2(200, 200));
 		
 		_enemies.Add(slime);
 		
@@ -72,6 +75,7 @@ public class LevelObjectManager
 		DebugMenu.Instance.Watch.RegisterWatch("player velocity", () => Vector2.Round(Player.Velocity).ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player prospective move", () => Vector2.Round(Player.Velocity * Core.DT).ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player prospective move2", () => Vector2.Round(Player.Position + (Player.Velocity * Core.DT)).ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("can slime see", () => CanSlimeSee.ToString());
 		DebugMenu.Instance.Flags.RegisterFlag("Show Hitboxes" ,() => {
 			Collision.ShowHitboxes = !Collision.ShowHitboxes;
 		});
@@ -87,8 +91,10 @@ public class LevelObjectManager
 		TextureAtlas enemyAtlas = TextureAtlas.FromFile(content, "sprites/enemyAtlas-definition.xml");		// for enemy in json:
 		
 		Player.LoadContent(playerAtlas);
+		
 		foreach (var enemy in _enemies)
 		{
+
 			enemy.LoadContent(enemyAtlas);
 		}
 	}
@@ -109,9 +115,39 @@ public class LevelObjectManager
 		Player.Move(validatedMove.X, validatedMove.Y);
 		//if (!validatedMove.IsZero()) Player.Move();
 		
-		
 		foreach (var enemy in _enemies)
 		{
+			CanSlimeSee = false;
+			Vector2 delta = Player.Position - enemy.Position;
+			int losStepCounter = 0;
+			
+			if (!delta.IsZero() && delta.LengthSquared() < Math.Pow(enemy.DetectionDistance, 2))
+			{
+				Vector2 dir = Vector2.Normalize(delta);
+				Vector2 losCheckStart = enemy.Position;
+				Vector2 losCheckCurrentStep = losCheckStart;
+				Vector2 losStepIncrement = new Vector2(5, 5);
+				
+				while ((losCheckCurrentStep - losCheckStart).LengthSquared() < delta.LengthSquared())
+				{
+					losCheckCurrentStep = losCheckStart + dir * losStepIncrement * losStepCounter;
+					int xTile = (int) losCheckCurrentStep.X / Map.TileSize;
+					int yTile = (int) losCheckCurrentStep.Y / Map.TileSize;
+		
+					if (Collision.MapCollisionGrid[yTile, xTile] == 1)
+					{
+						CanSlimeSee = false;
+						break;
+					}
+
+					losStepCounter++;
+				}
+
+				if ((losCheckCurrentStep - losCheckStart).LengthSquared() > delta.LengthSquared())
+				{
+					CanSlimeSee = true;
+				}
+			}
 			enemy.Update(gameTime, Player.Position);
 		}
 	}

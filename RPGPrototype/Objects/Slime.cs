@@ -14,6 +14,7 @@ public class Slime : Enemy
 	{
 		_maxVelocity = new Vector2(30, 30);
 		Acceleration = new Vector2(1, 1);
+		DetectionDistance = 100;
 	}
 
 	public AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
@@ -44,11 +45,11 @@ public class Slime : Enemy
 	public void Follow(GameTime gameTime, Vector2 target)
 	{
 		Vector2 delta = target - Position;
-		if (!delta.IsZero())
+		/*if (!delta.IsZero())
 		{
 			MovementDirection = Vector2.Normalize(delta);
 			UpdateVelocity(gameTime);
-		}
+		}*/
 		
 	}
 

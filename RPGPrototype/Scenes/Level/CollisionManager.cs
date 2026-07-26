@@ -42,6 +42,8 @@ public class CollisionManager
 	}
 	public bool ShowHitboxes { get; set; }
 
+	public int[,] MapCollisionGrid => _mapCollisionGrid;
+
 	public void LoadContent()
 	{
 		
@@ -66,7 +68,7 @@ public class CollisionManager
 		
 		foreach (var tile in _tileIntersections)
 		{
-			if (_mapCollisionGrid[tile.Y, tile.X] == 1)
+			if (MapCollisionGrid[tile.Y, tile.X] == 1)
 			{
 				if (prospectiveMoveX.Intersects(new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
 				{
@@ -81,7 +83,7 @@ public class CollisionManager
 		
 		foreach (var tile in _tileIntersections)
 		{
-			if (_mapCollisionGrid[tile.Y, tile.X] == 1)
+			if (MapCollisionGrid[tile.Y, tile.X] == 1)
 			{
 				if (prospectiveMoveY.Intersects(new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
 				{
@@ -171,7 +173,7 @@ public class CollisionManager
 			{
 				Core.SpriteBatch.Draw(_pixelTexture, new Rectangle((int) j * tileSize, (int) i * tileSize,
 					tileSize, tileSize),
-					_collisionColors[_mapCollisionGrid[i, j]] * 0.3f);
+					_collisionColors[MapCollisionGrid[i, j]] * 0.3f);
 			}
 		}
 	}

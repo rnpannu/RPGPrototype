@@ -27,7 +27,9 @@ public class Enemy : Entity
 	{
 		
 	}
-
+	
+	public int DetectionDistance { get; protected set; }
+	
 	public virtual StateMachine StateMachine
 	{
 		get => field;
