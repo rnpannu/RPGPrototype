@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
+using RPGPrototype.Objects;
 using RPGPrototype.UI.Debug;
 
 namespace RPGPrototype.Scenes;
@@ -13,27 +15,27 @@ public class CollisionManager
 	private readonly Texture2D _pixelTexture;
 	private Rectangle _nextTravelCell;
 	private Color _nextTravelCellColor;
-	
+
 	private List<Rectangle> _tileIntersections = [];
-	
+
 	public CollisionManager(LevelData map)
 	{
 		Map = map;
 
 		_pixelTexture = new Texture2D(Core.GraphicsDevice, 1, 1);
 		_pixelTexture.SetData(new[] { Color.White });
-		
+
 		_mapCollisionGrid = LevelUtility.LoadIntGrid("Collision.csv", "Level_0");
-		
+
 		_collisionColors.Add(0, Color.GreenYellow);
 		_collisionColors.Add(1, Color.Red);
-		
+
 		Initialize();
 	}
 
 	public void Initialize()
 	{
-		
+
 	}
 	public LevelData Map
 	{
@@ -46,7 +48,7 @@ public class CollisionManager
 
 	public void LoadContent()
 	{
-		
+
 	}
 
 	/// <summary>
@@ -64,43 +66,61 @@ public class CollisionManager
 		bool yCollision = false;
 
 		Rectangle prospectiveMoveX = new Rectangle(target.X + (int) prospectiveMove.X * 3, target.Y, target.Width, target.Height); // Magic number 3?
-		_tileIntersections = GetIntersectingTilesHorizontal(prospectiveMoveX);
-		
-		foreach (var tile in _tileIntersections)
-		{
-			if (MapCollisionGrid[tile.Y, tile.X] == 1)
-			{
-				if (prospectiveMoveX.Intersects(new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
-				{
-					xCollision = true;
-				} 
-			}
-		}
-		
+        _tileIntersections = GetIntersectingTilesHorizontal(prospectiveMoveX);
+            Console.WriteLine(prospectiveMoveX.Right);
+
+        foreach (var tile in _tileIntersections)
+        {
+            if (MapCollisionGrid[tile.Y, tile.X] == 1)
+            {
+                if (prospectiveMoveX.Intersects(new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
+                {
+                    xCollision = true;
+                }
+            }
+        }
+
+        if (prospectiveMoveX.Left <= 0 ||prospectiveMoveX.Right >= Map.Width - 2)
+        {
+            Console.WriteLine(prospectiveMoveX.Right);
+            Console.WriteLine(Map.Width);
+            Console.WriteLine("X Collision");
+            xCollision = true;
+        }
+
+
 		Rectangle prospectiveMoveY = new Rectangle(target.X, target.Y + (int) prospectiveMove.Y * 3, target.Width, target.Height); // Magic number 3?
-		
-		_tileIntersections = GetIntersectingTilesVertical(prospectiveMoveY);
-		
-		foreach (var tile in _tileIntersections)
-		{
-			if (MapCollisionGrid[tile.Y, tile.X] == 1)
-			{
-				if (prospectiveMoveY.Intersects(new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
-				{
-					yCollision = true;
-				}
-			}
-		}
-		
+
+        _tileIntersections = GetIntersectingTilesVertical(prospectiveMoveY);
+
+        foreach (var tile in _tileIntersections)
+        {
+            if (MapCollisionGrid[tile.Y, tile.X] == 1)
+            {
+                if (prospectiveMoveY.Intersects(new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
+                {
+                    yCollision = true;
+                }
+            }
+        }
+
+        if (prospectiveMoveY.Top <= 0 || prospectiveMoveY.Bottom >= Map.Height - 1)
+        {
+            Console.WriteLine(prospectiveMoveY.Bottom);
+            Console.WriteLine(Map.Height);
+            Console.WriteLine("Y Collision");
+            yCollision = true;
+        }
+
 		return new Vector2(xCollision ? 0 : prospectiveMove.X, yCollision ? 0 : prospectiveMove.Y);
 	}
-	
+
 	public List<Rectangle> GetIntersectingTilesHorizontal(Rectangle target)
 	{
 		List<Rectangle> intersections = new();
 
 		int tileSize = Map.TileSize;
-		
+
 		// Get hitbox in tiles
 		int widthInTiles = (target.Width - (target.Width % tileSize)) / tileSize;
 		int heightInTiles = (target.Height - (target.Height % tileSize)) / tileSize;
@@ -119,7 +139,7 @@ public class CollisionManager
 
 		return intersections;
 	}
-	
+
 	public List<Rectangle> GetIntersectingTilesVertical(Rectangle target)
 	{
 		List<Rectangle> intersections = new();
@@ -160,7 +180,7 @@ public class CollisionManager
 			DrawRectHollow(new Rectangle((int) rect.X * tileSize, (int)rect.Y * tileSize, tileSize, tileSize));
 		}
 	}
-	
+
 	/// <summary>
 	/// Helper method to highlight collision map
 	/// </summary>
@@ -226,7 +246,7 @@ public class CollisionManager
 			Color.Red
 		);
 	}
-	
+
 	/// <summary>
 	/// Helper function that highlights the player's movement direction callculation
 	/// </summary>

@@ -18,19 +18,19 @@ namespace RPGPrototype.Scenes;
 public class LevelObjectManager
 {
 	private DebugMenu _debug;
-	
+
 	// Todo: Create a better atlas parser that can iterate frames without specifying the coords of each one
 	private TextureAtlas _objectAtlas;
-	
+
 	private readonly List<Enemy> _enemies = new();
 
 	private bool _drawPlayer = true;
-	
+
 	public LevelObjectManager(LevelData map)
 	{
 		Map = map;
 		Collision = new CollisionManager(map);
-		
+
 		Initialize();
 	}
 
@@ -51,7 +51,7 @@ public class LevelObjectManager
 		get => field;
 		private set => field = value;
 	}
-	
+
 	public bool CanSlimeSee { get; private set; }
 
 	public void Initialize()
@@ -59,9 +59,9 @@ public class LevelObjectManager
 		Player = new Player(new Vector2(50, 50));
 		Player.Initialize();
 		Enemy slime = new Slime(new Vector2(200, 200));
-		
+
 		_enemies.Add(slime);
-		
+
 		InitializeDebug();
 	}
 
@@ -89,16 +89,16 @@ public class LevelObjectManager
 		_objectAtlas = TextureAtlas.FromFile(content, "sprites/objectAtlas-definition.xml");
 		TextureAtlas playerAtlas = TextureAtlas.FromFile(content, "sprites/playerAtlas-definition.xml");
 		TextureAtlas enemyAtlas = TextureAtlas.FromFile(content, "sprites/enemyAtlas-definition.xml");		// for enemy in json:
-		
+
 		Player.LoadContent(playerAtlas);
-		
+
 		foreach (var enemy in _enemies)
 		{
 
 			enemy.LoadContent(enemyAtlas);
 		}
 	}
-	
+
 	/// <summary>
 	/// Update entities and anything else that the object manager is responsible for.
 	/// </summary>
@@ -107,33 +107,33 @@ public class LevelObjectManager
 	public void Update(GameTime gameTime, Vector2 inputDirection)
 	{
 		Player.MovementDirection = inputDirection;
-		Player.Update(gameTime);
-		
+        Player.Update(gameTime);
+
 		Vector2 prospectiveMove = (Player.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
 		Vector2 validatedMove = Collision.ValidateMovement(Player.Rect, prospectiveMove);
-		
+
 		Player.Move(validatedMove.X, validatedMove.Y);
 		//if (!validatedMove.IsZero()) Player.Move();
-		
+
 		foreach (var enemy in _enemies)
 		{
 			CanSlimeSee = false;
 			Vector2 delta = Player.Position - enemy.Position;
 			int losStepCounter = 0;
-			
+
 			if (!delta.IsZero() && delta.LengthSquared() < Math.Pow(enemy.DetectionDistance, 2))
 			{
 				Vector2 dir = Vector2.Normalize(delta);
 				Vector2 losCheckStart = enemy.Position;
 				Vector2 losCheckCurrentStep = losCheckStart;
 				Vector2 losStepIncrement = new Vector2(5, 5);
-				
+
 				while ((losCheckCurrentStep - losCheckStart).LengthSquared() < delta.LengthSquared())
 				{
 					losCheckCurrentStep = losCheckStart + dir * losStepIncrement * losStepCounter;
 					int xTile = (int) losCheckCurrentStep.X / Map.TileSize;
 					int yTile = (int) losCheckCurrentStep.Y / Map.TileSize;
-		
+
 					if (Collision.MapCollisionGrid[yTile, xTile] == 1)
 					{
 						CanSlimeSee = false;
@@ -164,11 +164,11 @@ public class LevelObjectManager
 		{
 			Player.Draw(gameTime);
 		}
-		
+
 		foreach (var enemy in _enemies)
 		{
 			enemy.Draw(gameTime);
 		}
 	}
-	
+
 }
