@@ -1,1 +1,3 @@
 ﻿1. Collision manager updates the player movmenent directly, maybe just have it set the velocity to 0
+
+2. Slime may have, patrolling, pursue player directly, pursue last known position, and return to idle states. As well as maybe an intial alert state.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using RPGPrototype.Objects.States;
@@ -10,10 +11,12 @@ namespace RPGPrototype.Objects;
 
 public class Slime : Enemy
 {
+	private static Texture2D _pixel;
+	//private Vector2 _arrivalSpeed;
 	public Slime(Vector2 position) : base(position)
 	{
 		_maxVelocity = new Vector2(30, 30);
-		Acceleration = new Vector2(1, 1);
+		Acceleration = new Vector2(80, 80);
 		DetectionDistance = 100;
 	}
 
@@ -21,6 +24,10 @@ public class Slime : Enemy
 	
 	public override void Initialize()
 	{
+		_pixel = new Texture2D(Core.GraphicsDevice, 1, 1);
+		_pixel.SetData(new[] { Color.White });
+		
+		_patrolArea = new Rectangle(150, 50, 200, 200);
 		base.Initialize();
 		List<State> states =
 		[
@@ -35,27 +42,44 @@ public class Slime : Enemy
 		Sprite = objectAtlas.CreateAnimatedSprite("slime-idle");
 	}
 
-	public override void Update(GameTime gameTime, Vector2 target)
+	public override void Update(GameTime gameTime)
 	{
 		base.Update(gameTime);
-		Follow(gameTime, target);
-		Position += Velocity;
+		UpdateVelocity(gameTime);
+		Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
 	}
 	
 	public void Follow(GameTime gameTime, Vector2 target)
 	{
 		Vector2 delta = target - Position;
-		/*if (!delta.IsZero())
+		//_arrivalSpeed = _maxVelocity * Math.Clamp(delta.LengthSquared() / 25, 0, 1); // 5 pixel slowing radius
+		if (!delta.IsZero(1.5f))
 		{
-			MovementDirection = Vector2.Normalize(delta);
-			UpdateVelocity(gameTime);
-		}*/
-		
+			//MovementDirection = Vector2.Normalize(delta);
+			MovementDirection = delta;
+		}
+		else
+		{
+			Position = target;
+			MovementDirection = Vector2.Zero;
+		}
 	}
 
 	public void UpdateVelocity(GameTime gameTime)
 	{
-		Velocity += MovementDirection * Acceleration * (float)gameTime.ElapsedGameTime.TotalSeconds;
+		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+		
+
+		if (MovementDirection.IsZero()) // decelerate
+		{
+			Velocity = Vector2.Lerp(Velocity, Vector2.Zero, 50f //* dt
+			);
+		}
+		else
+		{
+			Velocity += MovementDirection * Acceleration// * dt
+				;
+		}
 		Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
 	}
 	
@@ -63,5 +87,23 @@ public class Slime : Enemy
 	public override void Draw(GameTime gameTime)
 	{
 		base.Draw(gameTime);
+		int size = 10;
+		foreach (Vector2 point in PatrolPoints)
+		{
+			var rect = new Rectangle(
+				(int)(point.X - size / 2f),
+				(int)(point.Y - size / 2f),
+				(int)size,
+				(int)size);
+
+			Core.SpriteBatch.Draw(_pixel, rect, Color.Green);
+			/*spriteBatch.Draw(_pixel,
+				new Rectangle((int)(point.X - radius), (int)(point.Y - thickness / 2f), (int)(radius * 2f), (int)thickness),
+				color);
+			spriteBatch.Draw(_pixel,
+				new Rectangle((int)(point.X - thickness / 2f), (int)(point.Y - radius), (int)thickness, (int)(radius * 2f)),
+				color);*/
+		}
+		
 	}
 }

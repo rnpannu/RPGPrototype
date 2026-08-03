@@ -1,28 +1,53 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
+using MonoGameLibrary;
 using RPGPrototype.Objects.States.PlayerStates;
 
 namespace RPGPrototype.Objects.States.SlimeStates;
 
 public class SlimeIdleState : SlimeState
 {
+	private Vector2 TargetPoint { get; set; }
+	
 	public const string StateName = nameof(SlimeIdleState);
 	public override string Name => StateName;
-
+	
 	public SlimeIdleState(Slime slime) : base(slime)
 	{
-
+		int randomIndex = Random.Shared.Next(Slime.PatrolPoints.Count);
+		TargetPoint = Slime.PatrolPoints[randomIndex];
 	}
 
 	public override void Update(GameTime gameTime)
 	{
 		base.Update(gameTime);
-		/*if (Slime.IsAggroed())
+		
+		if (Slime.HasLOS)
 		{
 			Slime.StateMachine.Transition(SlimePursuingState.StateName);
 			return;
 		}
+		else
+		{
+			Patrol(gameTime);
+		}
+	}
 
-		Slime.UpdateVelocity(); // still allow deceleration*/
-
+	public void Patrol(GameTime gameTime)
+	{
+		if (Slime.Position.IsApproximately(TargetPoint, 1.5f))
+		{
+			/*int randomIndex = Random.Shared.Next(Slime.PatrolPoints.Count);
+			TargetPoint = Slime.PatrolPoints[randomIndex];*/
+			int currentTargetIndex = Slime.PatrolPoints.IndexOf(TargetPoint);
+			int newTargetIndex = (currentTargetIndex + 1) % Slime.PatrolPoints.Count;
+			Slime.Position = TargetPoint;
+			TargetPoint = Slime.PatrolPoints[newTargetIndex];
+ 			Console.WriteLine("new target: " + TargetPoint.ToString());
+		}
+		else
+		{
+			Slime.Follow(gameTime, TargetPoint);
+		}
 	}
 }
