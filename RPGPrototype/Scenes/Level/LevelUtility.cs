@@ -21,7 +21,7 @@ public static class LevelUtility
 		}
 		else if (RuntimeInformation.IsOSPlatform((OSPlatform.Linux)))
 		{
-			basePath = Path.Combine("Content", "Tilemaps", "City", "simplified", "Level_0");
+			basePath = Path.Combine("Content", "maps", "Map", "simplified", "Level_0");
 		}
 
 		string file = Path.Combine(basePath, path);
@@ -30,11 +30,11 @@ public static class LevelUtility
 		{
 			throw new FileNotFoundException("Failed to load intgrid at: " + file);
 		}
-		
+
 		string[] lines = File.ReadAllLines(file);
 		int mapHeight = lines.Length;
 		int[,] intGrid = null;
-		
+
 		for (int i = 0; i < mapHeight; i++)
 		{
 			string[] rowData = lines[i].Split(",", StringSplitOptions.RemoveEmptyEntries);
