@@ -18,19 +18,19 @@ namespace RPGPrototype.Scenes;
 public class LevelObjectManager
 {
 	private DebugMenu _debug;
-	
+
 	// Todo: Create a better atlas parser that can iterate frames without specifying the coords of each one
 	private TextureAtlas _objectAtlas;
-	
+
 	private readonly List<Enemy> _enemies = new();
 
 	private bool _drawPlayer = true;
-	
+
 	public LevelObjectManager(LevelData map)
 	{
 		Map = map;
 		Collision = new CollisionManager(map);
-		
+
 		Initialize();
 	}
 
@@ -51,7 +51,7 @@ public class LevelObjectManager
 		get => field;
 		private set => field = value;
 	}
-	
+
 	public bool CanSlimeSee { get; private set; }
 
 	public void Initialize()
@@ -93,16 +93,16 @@ public class LevelObjectManager
 		_objectAtlas = TextureAtlas.FromFile(content, "sprites/objectAtlas-definition.xml");
 		TextureAtlas playerAtlas = TextureAtlas.FromFile(content, "sprites/playerAtlas-definition.xml");
 		TextureAtlas enemyAtlas = TextureAtlas.FromFile(content, "sprites/enemyAtlas-definition.xml");		// for enemy in json:
-		
+
 		Player.LoadContent(playerAtlas);
-		
+
 		foreach (var enemy in _enemies)
 		{
 
 			enemy.LoadContent(enemyAtlas);
 		}
 	}
-	
+
 	/// <summary>
 	/// Update entities and anything else that the object manager is responsible for.
 	/// </summary>
@@ -111,14 +111,20 @@ public class LevelObjectManager
 	public void Update(GameTime gameTime, Vector2 inputDirection)
 	{
 		Player.MovementDirection = inputDirection;
-		Player.Update(gameTime);
-		
-		Vector2 prospectiveMove = (Player.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
-		Vector2 validatedMove = Collision.ValidateMovement(Player.Rect, prospectiveMove);
-		
-		Player.Move(validatedMove.X, validatedMove.Y);
-		//if (!validatedMove.IsZero()) Player.Move();
-		
+        Player.Update(gameTime);
+
+		Vector2 prospectiveMove = Player.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+        Vector2 validatedMove = Collision.ValidateMovement(Player.Rect, prospectiveMove);
+
+        if (!validatedMove.IsZero())
+        {
+            Player.Move(validatedMove);
+        }
+        else
+        {
+            Player.Velocity = Vector2.Zero;
+        }
+
 		foreach (var enemy in _enemies)
 		{
 			enemy.CheckLOS(Player.Position, Collision.MapCollisionGrid, Map.TileSize);
@@ -138,11 +144,11 @@ public class LevelObjectManager
 		{
 			Player.Draw(gameTime);
 		}
-		
+
 		foreach (var enemy in _enemies)
 		{
 			enemy.Draw(gameTime);
 		}
 	}
-	
+
 }
