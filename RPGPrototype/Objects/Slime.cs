@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
@@ -12,6 +13,8 @@ namespace RPGPrototype.Objects;
 public class Slime : Enemy
 {
 	private static Texture2D _pixel;
+
+	private float _speedFactor;
 	//private Vector2 _arrivalSpeed;
 	public Slime(Vector2 position) : base(position)
 	{
@@ -46,23 +49,51 @@ public class Slime : Enemy
 	{
 		base.Update(gameTime);
 		UpdateVelocity(gameTime);
-		Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+		Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds
+			;
 	}
 	
 	public void Follow(GameTime gameTime, Vector2 target)
 	{
 		Vector2 delta = target - Position;
-		//_arrivalSpeed = _maxVelocity * Math.Clamp(delta.LengthSquared() / 25, 0, 1); // 5 pixel slowing radius
-		if (!delta.IsZero(1.5f))
+
+		float slowingRadius = 10f;
+		float arrivalTolerance = 1.5f;
+		float distance = delta.Length(); // scary expensive sqrt
+		
+		if (distance <= arrivalTolerance)
 		{
-			//MovementDirection = Vector2.Normalize(delta);
-			MovementDirection = delta;
+			Position = target;
+			MovementDirection = Vector2.Zero;
+			Velocity = Vector2.Zero;
+			_speedFactor = 0f;
+			return;
+		}
+		MovementDirection = delta / distance;
+		
+		_speedFactor = Math.Clamp(
+			distance / slowingRadius,
+			0f,
+			1f
+		);
+		
+		/*if (!delta.IsZero(1.5f))
+		{
+			MovementDirection = Vector2.Normalize(delta);
 		}
 		else
 		{
 			Position = target;
 			MovementDirection = Vector2.Zero;
+			Velocity = Vector2.Zero;
 		}
+		Vector2 desiredVelocity =
+			MovementDirection * _maxVelocity * arrivalFactor;
+		
+		Vector2 steering =
+			desiredVelocity - Velocity;
+
+		Velocity += steering * someAmount * dt;*/
 	}
 
 	public void UpdateVelocity(GameTime gameTime)
@@ -72,13 +103,37 @@ public class Slime : Enemy
 
 		if (MovementDirection.IsZero()) // decelerate
 		{
-			Velocity = Vector2.Lerp(Velocity, Vector2.Zero, 50f //* dt
+			Velocity = Vector2.Lerp(Velocity, Vector2.Zero, Math.Clamp(10f * dt, 0f, 1f)
 			);
 		}
 		else
 		{
-			Velocity += MovementDirection * Acceleration// * dt
-				;
+			float maxSpeed = _maxVelocity.X;
+			
+			Vector2 desiredVelocity =
+				MovementDirection * maxSpeed * _speedFactor;
+			
+			Vector2 steering =
+				desiredVelocity - Velocity;
+			
+			float maxVelocityChange = Acceleration.X * dt;
+			
+			if (steering.LengthSquared() >
+			    maxVelocityChange * maxVelocityChange)
+			{
+				steering = Vector2.Normalize(steering)
+				           * maxVelocityChange;
+			}
+			Velocity += steering;
+			_speedFactor = 1f;
+			//Velocity += MovementDirection * Acceleration * dt;
+		}
+		float maxSpeed2 = _maxVelocity.X;
+		if (Velocity.LengthSquared() >
+		    maxSpeed2 * maxSpeed2)
+		{
+			Velocity =
+				Vector2.Normalize(Velocity) * maxSpeed2;
 		}
 		Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
 	}
