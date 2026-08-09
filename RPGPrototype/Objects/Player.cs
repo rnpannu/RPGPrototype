@@ -68,29 +68,29 @@ public class Player : Entity
 	}
 
 	/// <summary>
-	/// Increase or decay velocity according to current movement input.
+	/// Increase or decay velocity according to current movement input. Permit wall sliding by retaining velocity in other directions.
 	/// </summary>
 	public void UpdateVelocity(GameTime gameTime)
 	{
 		// Potentially want to refactor into movement state
-		float accel = (float)Math.Pow((double)(Acceleration.X), 2) * Core.DT; // Make everything linear
 		float velocityDecay = 50f * (float) gameTime.ElapsedGameTime.TotalSeconds; // Decays at 50 / second at 60fps? Math could be wrong
 
-		if (!MovementDirection.IsZeroX() && !MovementDirection.IsZeroY())
+		if (!MovementDirection.IsZeroX() && !MovementDirection.IsZeroY()) // Both axis permitted
 		{
 			Velocity += MovementDirection * Acceleration; //* (float) gameTime.ElapsedGameTime.TotalSeconds;
 			Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
 		}
 		else
 		{
-            float newX = !MovementDirection.IsZeroX()
-                ? Velocity.X + MovementDirection.X * Acceleration.X //* (float)gameTime.ElapsedGameTime.TotalSeconds)
-                : GameUtils.BasicLerp(Velocity.X, 0, velocityDecay);
-
-            float newY = !MovementDirection.IsZeroY()
-                ? Velocity.Y + MovementDirection.Y * Acceleration.Y //* (float) gameTime.ElapsedGameTime.TotalSeconds
-                : GameUtils.BasicLerp(Velocity.Y, 0, velocityDecay);
-
+			// Permit horizontal sliding
+			float newX = !MovementDirection.IsZeroX()
+				? Velocity.X + MovementDirection.X * Acceleration.X //* (float)gameTime.ElapsedGameTime.TotalSeconds)
+				: GameUtils.BasicLerp(Velocity.X, 0, velocityDecay);
+			// Permit vertical sliding
+			float newY = !MovementDirection.IsZeroY()
+				? Velocity.Y + MovementDirection.Y * Acceleration.Y //* (float) gameTime.ElapsedGameTime.TotalSeconds
+				: GameUtils.BasicLerp(Velocity.Y, 0, velocityDecay);
+			
 			Velocity = Vector2.Clamp(new Vector2(newX, newY), -_maxVelocity, _maxVelocity);
 		}
 	}

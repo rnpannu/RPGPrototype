@@ -58,10 +58,12 @@ public class LevelObjectManager
 	{
 		Player = new Player(new Vector2(50, 50));
 		Player.Initialize();
-		Enemy slime = new Slime(new Vector2(200, 200));
-
+		Enemy slime = new Slime(new Vector2(250, 150));
 		_enemies.Add(slime);
-
+		foreach (Enemy enemy in _enemies)
+		{
+			enemy.Initialize();
+		}
 		InitializeDebug();
 	}
 
@@ -75,7 +77,9 @@ public class LevelObjectManager
 		DebugMenu.Instance.Watch.RegisterWatch("player velocity", () => Vector2.Round(Player.Velocity).ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player prospective move", () => Vector2.Round(Player.Velocity * Core.DT).ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player prospective move2", () => Vector2.Round(Player.Position + (Player.Velocity * Core.DT)).ToString());
-		DebugMenu.Instance.Watch.RegisterWatch("can slime see", () => CanSlimeSee.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("? Slime LOS", () => _enemies[0].HasLOS.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("Current Slime State", () => _enemies[0].StateMachine.CurrentState.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("LOS target", () => _enemies[0].CurrentLOSTarget.ToString());
 		DebugMenu.Instance.Flags.RegisterFlag("Show Hitboxes" ,() => {
 			Collision.ShowHitboxes = !Collision.ShowHitboxes;
 		});
@@ -123,38 +127,8 @@ public class LevelObjectManager
 
 		foreach (var enemy in _enemies)
 		{
-			CanSlimeSee = false;
-			Vector2 delta = Player.Position - enemy.Position;
-			int losStepCounter = 0;
-
-			if (!delta.IsZero() && delta.LengthSquared() < Math.Pow(enemy.DetectionDistance, 2))
-			{
-				Vector2 dir = Vector2.Normalize(delta);
-				Vector2 losCheckStart = enemy.Position;
-				Vector2 losCheckCurrentStep = losCheckStart;
-				Vector2 losStepIncrement = new Vector2(5, 5);
-
-				while ((losCheckCurrentStep - losCheckStart).LengthSquared() < delta.LengthSquared())
-				{
-					losCheckCurrentStep = losCheckStart + dir * losStepIncrement * losStepCounter;
-					int xTile = (int) losCheckCurrentStep.X / Map.TileSize;
-					int yTile = (int) losCheckCurrentStep.Y / Map.TileSize;
-
-					if (Collision.MapCollisionGrid[yTile, xTile] == 1)
-					{
-						CanSlimeSee = false;
-						break;
-					}
-
-					losStepCounter++;
-				}
-
-				if ((losCheckCurrentStep - losCheckStart).LengthSquared() > delta.LengthSquared())
-				{
-					CanSlimeSee = true;
-				}
-			}
-			enemy.Update(gameTime, Player.Position);
+			enemy.CheckLOS(Player.Position, Collision.MapCollisionGrid, Map.TileSize);
+			enemy.Update(gameTime);
 		}
 	}
 

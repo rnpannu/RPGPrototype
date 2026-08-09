@@ -42,6 +42,7 @@ public class CollisionManager
 		get => field;
 		set => field = value;
 	}
+	
 	public bool ShowHitboxes { get; set; }
 
 	public int[,] MapCollisionGrid => _mapCollisionGrid;
