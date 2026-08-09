@@ -64,7 +64,7 @@ public class Player : Entity
 	public override void Update(GameTime gameTime)
 	{
 		base.Update(gameTime);
-		StateMachine.Update(gameTime);
+        StateMachine.Update(gameTime);
 	}
 
 	/// <summary>
@@ -83,32 +83,21 @@ public class Player : Entity
 		}
 		else
 		{
-			float newX = !MovementDirection.IsZeroX()
-				? Velocity.X + MovementDirection.X * Acceleration.X //* (float)gameTime.ElapsedGameTime.TotalSeconds)
-				: GameUtils.BasicLerp(Velocity.X, 0, velocityDecay);
+            float newX = !MovementDirection.IsZeroX()
+                ? Velocity.X + MovementDirection.X * Acceleration.X //* (float)gameTime.ElapsedGameTime.TotalSeconds)
+                : GameUtils.BasicLerp(Velocity.X, 0, velocityDecay);
 
-			float newY = !MovementDirection.IsZeroY()
-				? Velocity.Y + MovementDirection.Y * Acceleration.Y //* (float) gameTime.ElapsedGameTime.TotalSeconds
-				: GameUtils.BasicLerp(Velocity.Y, 0, velocityDecay);
+            float newY = !MovementDirection.IsZeroY()
+                ? Velocity.Y + MovementDirection.Y * Acceleration.Y //* (float) gameTime.ElapsedGameTime.TotalSeconds
+                : GameUtils.BasicLerp(Velocity.Y, 0, velocityDecay);
 
 			Velocity = Vector2.Clamp(new Vector2(newX, newY), -_maxVelocity, _maxVelocity);
 		}
 	}
 
-	/// <summary>
-	/// Alter the Player's position by an amount, or force a move to an absolute position.
-	/// </summary>
-	/// <param name="xAmount">Offset from the current X position | New absolute X position</param>
-	/// <param name="yAmount">Offset from the current Y position | New absolute Y position</param>
-	/// <param name="absolute">Boolean flag to alter behaviour to an absolute positioning.</param>
-	public void Move(float xAmount, float yAmount, bool absolute = false)
-	{
-		Position = !absolute ? new Vector2(Position.X + xAmount, Position.Y + yAmount) : new Vector2(xAmount, yAmount);
-	}
-
-	public void Move()
-	{
-		Position += Velocity * Core.DT;
+	public void Move(Vector2 validatedMove)
+    {
+		Position += validatedMove;
 	}
 
 	/// <summary>

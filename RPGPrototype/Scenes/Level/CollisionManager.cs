@@ -46,50 +46,39 @@ public class CollisionManager
 
 	public int[,] MapCollisionGrid => _mapCollisionGrid;
 
-	public void LoadContent()
-	{
+    public void LoadContent()
+    {
 
-	}
+    }
 
-	/// <summary>
-	/// Check for collisions before admitting a move. Ideally works in 2 steps
-	/// 1. Get intersecting tiles around the player (broad pass - don't want to check every tile)
-	/// 2. Do finer, more precise check on player hitbox with surrounding tiles.
-	/// Currently the system does not do #2, will be implemented later.
-	/// </summary>
-	/// <param name="movementDirection"> The direction of player movement </param>
-	public Vector2 ValidateMovement(Rectangle target, Vector2 prospectiveMove)
-	{
-		// TODO: Remove movementdirection?
-		int tileSize = Map.TileSize;
-		bool xCollision = false;
-		bool yCollision = false;
+    public Vector2 ValidateMovement(Rectangle target, Vector2 prospectiveMove)
+    {
+        int tileSize = Map.TileSize;
+        Vector2 validatedMove = prospectiveMove;
 
-		Rectangle prospectiveMoveX = new Rectangle(target.X + (int) prospectiveMove.X * 3, target.Y, target.Width, target.Height); // Magic number 3?
+        Rectangle prospectiveMoveX = new Rectangle(target.X + (int)prospectiveMove.X * 2, target.Y, target.Width, target.Height );
+
         _tileIntersections = GetIntersectingTilesHorizontal(prospectiveMoveX);
-            Console.WriteLine(prospectiveMoveX.Right);
 
         foreach (var tile in _tileIntersections)
         {
             if (MapCollisionGrid[tile.Y, tile.X] == 1)
             {
-                if (prospectiveMoveX.Intersects(new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
+                if (prospectiveMoveX.Intersects(
+                    new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
                 {
-                    xCollision = true;
+                    validatedMove.X = 0;
+                    break;
                 }
             }
         }
 
-        if (prospectiveMoveX.Left <= 0 ||prospectiveMoveX.Right >= Map.Width - 2)
+        if (prospectiveMoveX.Left <= 0 || prospectiveMoveX.Right >= Map.Width - 2)
         {
-            Console.WriteLine(prospectiveMoveX.Right);
-            Console.WriteLine(Map.Width);
-            Console.WriteLine("X Collision");
-            xCollision = true;
+            validatedMove.X = 0;
         }
 
-
-		Rectangle prospectiveMoveY = new Rectangle(target.X, target.Y + (int) prospectiveMove.Y * 3, target.Width, target.Height); // Magic number 3?
+        Rectangle prospectiveMoveY = new Rectangle( target.X + (int)validatedMove.X * 2, target.Y + (int)prospectiveMove.Y * 2, target.Width, target.Height );
 
         _tileIntersections = GetIntersectingTilesVertical(prospectiveMoveY);
 
@@ -97,32 +86,31 @@ public class CollisionManager
         {
             if (MapCollisionGrid[tile.Y, tile.X] == 1)
             {
-                if (prospectiveMoveY.Intersects(new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
+                if (prospectiveMoveY.Intersects(
+                    new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
                 {
-                    yCollision = true;
+                    validatedMove.Y = 0;
+                    break;
                 }
             }
         }
 
         if (prospectiveMoveY.Top <= 0 || prospectiveMoveY.Bottom >= Map.Height - 1)
         {
-            Console.WriteLine(prospectiveMoveY.Bottom);
-            Console.WriteLine(Map.Height);
-            Console.WriteLine("Y Collision");
-            yCollision = true;
+            validatedMove.Y = 0;
         }
-
-		return new Vector2(xCollision ? 0 : prospectiveMove.X, yCollision ? 0 : prospectiveMove.Y);
-	}
+        return validatedMove;
+    }
 
 	public List<Rectangle> GetIntersectingTilesHorizontal(Rectangle target)
 	{
 		List<Rectangle> intersections = new();
 
-		int tileSize = Map.TileSize;
+        int tileSize = Map.TileSize;
+        int targetWidth = target.Width * 3;
 
 		// Get hitbox in tiles
-		int widthInTiles = (target.Width - (target.Width % tileSize)) / tileSize;
+		int widthInTiles = (targetWidth - (target.Width % tileSize)) / tileSize;
 		int heightInTiles = (target.Height - (target.Height % tileSize)) / tileSize;
 
 		for (int x = 0; x <= widthInTiles; x++) {

@@ -109,11 +109,17 @@ public class LevelObjectManager
 		Player.MovementDirection = inputDirection;
         Player.Update(gameTime);
 
-		Vector2 prospectiveMove = (Player.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
-		Vector2 validatedMove = Collision.ValidateMovement(Player.Rect, prospectiveMove);
+		Vector2 prospectiveMove = Player.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+        Vector2 validatedMove = Collision.ValidateMovement(Player.Rect, prospectiveMove);
 
-		Player.Move(validatedMove.X, validatedMove.Y);
-		//if (!validatedMove.IsZero()) Player.Move();
+        if (!validatedMove.IsZero())
+        {
+            Player.Move(validatedMove);
+        }
+        else
+        {
+            Player.Velocity = Vector2.Zero;
+        }
 
 		foreach (var enemy in _enemies)
 		{
