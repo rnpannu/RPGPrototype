@@ -53,15 +53,19 @@ public class Slime : Enemy
 			;
 	}
 	
+	/// <summary>
+	/// Path towards a target, 
+	/// </summary>
+	/// <param name="gameTime"></param>
+	/// <param name="target"></param>
 	public void Follow(GameTime gameTime, Vector2 target)
 	{
 		Vector2 delta = target - Position;
-
-		float slowingRadius = 10f;
-		float arrivalTolerance = 1.5f;
-		float distance = delta.Length(); // scary expensive sqrt
+		float distance = delta.Length();
+		float arrivalTolerance = 1.5f; // 1.5 pixel zone for "reaching" target
+		float slowingRadius = 10f; // begin braking
 		
-		if (distance <= arrivalTolerance)
+		if (distance <= arrivalTolerance) // On top of target
 		{
 			Position = target;
 			MovementDirection = Vector2.Zero;
@@ -69,51 +73,48 @@ public class Slime : Enemy
 			_speedFactor = 0f;
 			return;
 		}
-		MovementDirection = delta / distance;
 		
+		MovementDirection = delta / distance; // Normalize direction value
+		
+		// Decay velocity if within slowing zone
 		_speedFactor = Math.Clamp(
 			distance / slowingRadius,
 			0f,
 			1f
 		);
 		
-		/*if (!delta.IsZero(1.5f))
-		{
-			MovementDirection = Vector2.Normalize(delta);
-		}
-		else
-		{
-			Position = target;
-			MovementDirection = Vector2.Zero;
-			Velocity = Vector2.Zero;
-		}
-		Vector2 desiredVelocity =
-			MovementDirection * _maxVelocity * arrivalFactor;
-		
-		Vector2 steering =
-			desiredVelocity - Velocity;
-
-		Velocity += steering * someAmount * dt;*/
 	}
-
+	
 	public void UpdateVelocity(GameTime gameTime)
 	{
 		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 		
-
 		if (MovementDirection.IsZero()) // decelerate
 		{
-			Velocity = Vector2.Lerp(Velocity, Vector2.Zero, Math.Clamp(10f * dt, 0f, 1f)
+			float speed = Velocity.Length();
+			float decelerationAmount = Acceleration.X * dt;
+
+			if (speed <= decelerationAmount)
+			{
+				Velocity = Vector2.Zero;
+			}
+			else
+			{
+				Velocity -= Vector2.Normalize(Velocity) * decelerationAmount;
+			}
+			/*Velocity = Vector2.Lerp(Velocity, Vector2.Zero, Math.Clamp(10f * dt, 0f, 1f) // 0.167 magic value i guess, asymptotic lerp 16% toward 0 this frame i think
 			);
+			Velocity.SnapToZero();*/
 		}
 		else
 		{
 			float maxSpeed = _maxVelocity.X;
 			
-			Vector2 desiredVelocity =
+			Vector2 desiredVelocity = // without respect to acceleration
 				MovementDirection * maxSpeed * _speedFactor;
 			
-			Vector2 steering =
+			// Steer towards intended direction and magnitude without breaking acceleration limit
+			Vector2 steering = 
 				desiredVelocity - Velocity;
 			
 			float maxVelocityChange = Acceleration.X * dt;
@@ -125,9 +126,10 @@ public class Slime : Enemy
 				           * maxVelocityChange;
 			}
 			Velocity += steering;
-			_speedFactor = 1f;
+			_speedFactor = 1f; // Reset every frame
 			//Velocity += MovementDirection * Acceleration * dt;
 		}
+		
 		float maxSpeed2 = _maxVelocity.X;
 		if (Velocity.LengthSquared() >
 		    maxSpeed2 * maxSpeed2)
