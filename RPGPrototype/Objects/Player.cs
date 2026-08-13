@@ -76,9 +76,30 @@ public class Player : Entity
 		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 		float velocityDecay = 50f * (float) gameTime.ElapsedGameTime.TotalSeconds; // Decays at 50 / second at 60fps? Math could be wrong
 
-		if (!MovementDirection.IsZeroX() && !MovementDirection.IsZeroY()) // Both axis permitted
+		float newX;
+		if (!MovementDirection.IsZeroX())
 		{
-			Velocity += MovementDirection * Acceleration * dt; //1.33 per frame or 80px/s 
+			newX = Velocity.X + MovementDirection.X * Acceleration.X * dt;
+		}
+		else
+		{
+			newX = Decelerate(Velocity.X, Acceleration.X, dt);
+		}
+
+		float newY;
+		if (!MovementDirection.IsZeroY())
+		{
+			newY = Velocity.X + MovementDirection.X * Acceleration.Y * dt;
+		}
+		else
+		{
+			newY = Decelerate(Velocity.X, Acceleration.Y, dt);
+		}
+		
+		Velocity = Vector2.Clamp(new Vector2(newX, newY), -_maxVelocity, _maxVelocity);
+		/*if (!MovementDirection.IsZeroX() && !MovementDirection.IsZeroY()) // Both axis permitted
+		{
+			Velocity += MovementDirection * Acceleration * dt; //1.33 per frame or 80px/s
 			Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
 		}
 		else
@@ -91,12 +112,22 @@ public class Player : Entity
 			float newY = !MovementDirection.IsZeroY()
 				? Velocity.Y + MovementDirection.Y * Acceleration.Y * dt
 				: GameUtils.BasicLerp(Velocity.Y, 0, velocityDecay);
-			
+
 			Velocity = Vector2.Clamp(new Vector2(newX, newY), -_maxVelocity, _maxVelocity);
-		}
+		}*/
 	}
 	
-	private float Decelerate(float velocity, float deceleration, float dt)
+	/// <summary>
+	/// Decrease a velocity by an acceleration value
+	/// </summary>
+	/// <param name="velocity"></param>
+	/// <param name="deceleration"></param>
+	/// <param name="dt"></param>
+	/// <returns>The new velocity after one deceleration increment</returns>
+	private float Decelerate(
+		float velocity,
+		float deceleration,
+		float dt)
 	{
 		float amount = deceleration * dt;
 
@@ -106,7 +137,7 @@ public class Player : Entity
 		}
 
 		return velocity -
-		       Math.Sign(velocity) * amount; // if -, accelerate in positive
+		       Math.Sign(velocity) * amount;
 	}
 	/// <summary>
 	/// Alter the Player's position by an amount, or force a move to an absolute position.
