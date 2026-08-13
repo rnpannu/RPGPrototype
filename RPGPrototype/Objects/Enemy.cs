@@ -25,7 +25,7 @@ public class Enemy : Entity
 	private Vector2 _walkSpeed;
 	private Vector2 _pursueSpeed;
 	// last pursue tile index
-	private Vector2 _acceleration;
+
 	
 	public Enemy(Vector2 position) : base(position)
 	{

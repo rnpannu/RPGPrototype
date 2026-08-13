@@ -73,28 +73,41 @@ public class Player : Entity
 	public void UpdateVelocity(GameTime gameTime)
 	{
 		// Potentially want to refactor into movement state
+		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 		float velocityDecay = 50f * (float) gameTime.ElapsedGameTime.TotalSeconds; // Decays at 50 / second at 60fps? Math could be wrong
 
 		if (!MovementDirection.IsZeroX() && !MovementDirection.IsZeroY()) // Both axis permitted
 		{
-			Velocity += MovementDirection * Acceleration; //* (float) gameTime.ElapsedGameTime.TotalSeconds;
+			Velocity += MovementDirection * Acceleration * dt; //1.33 per frame or 80px/s 
 			Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
 		}
 		else
 		{
 			// Permit horizontal sliding
 			float newX = !MovementDirection.IsZeroX()
-				? Velocity.X + MovementDirection.X * Acceleration.X //* (float)gameTime.ElapsedGameTime.TotalSeconds)
+				? Velocity.X + MovementDirection.X * Acceleration.X * dt
 				: GameUtils.BasicLerp(Velocity.X, 0, velocityDecay);
 			// Permit vertical sliding
 			float newY = !MovementDirection.IsZeroY()
-				? Velocity.Y + MovementDirection.Y * Acceleration.Y //* (float) gameTime.ElapsedGameTime.TotalSeconds
+				? Velocity.Y + MovementDirection.Y * Acceleration.Y * dt
 				: GameUtils.BasicLerp(Velocity.Y, 0, velocityDecay);
 			
 			Velocity = Vector2.Clamp(new Vector2(newX, newY), -_maxVelocity, _maxVelocity);
 		}
 	}
 	
+	private float Decelerate(float velocity, float deceleration, float dt)
+	{
+		float amount = deceleration * dt;
+
+		if (Math.Abs(velocity) <= amount)
+		{
+			return 0f;
+		}
+
+		return velocity -
+		       Math.Sign(velocity) * amount; // if -, accelerate in positive
+	}
 	/// <summary>
 	/// Alter the Player's position by an amount, or force a move to an absolute position.
 	/// </summary>
