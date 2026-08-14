@@ -18,7 +18,7 @@ public class Player : Entity
 	public Player(Vector2 position) : base(position)
 	{
 		_maxVelocity = new Vector2(100, 100);
-		Acceleration = new Vector2(80, 80);
+		Acceleration = new Vector2(800, 800);
 	}
 
 	public StateMachine StateMachine
@@ -89,11 +89,11 @@ public class Player : Entity
 		float newY;
 		if (!MovementDirection.IsZeroY())
 		{
-			newY = Velocity.X + MovementDirection.X * Acceleration.Y * dt;
+			newY = Velocity.Y + MovementDirection.Y * Acceleration.Y * dt;
 		}
 		else
 		{
-			newY = Decelerate(Velocity.X, Acceleration.Y, dt);
+			newY = Decelerate(Velocity.Y, Acceleration.Y, dt);
 		}
 		
 		Velocity = Vector2.Clamp(new Vector2(newX, newY), -_maxVelocity, _maxVelocity);

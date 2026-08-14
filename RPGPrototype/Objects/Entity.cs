@@ -57,6 +57,12 @@ public abstract class Entity
 			(int)(Position.Y - Sprite.Origin.Y),
 			(int)Sprite.Width,
 			(int)Sprite.Height);
+	
+	public virtual RectangleF RectF =>
+		new RectangleF((Position.X - Sprite.Origin.X),
+			(Position.Y - Sprite.Origin.Y),
+			Sprite.Width,
+			Sprite.Height);
 
 	public virtual Rectangle Hitbox { get; protected set; }
 	
