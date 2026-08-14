@@ -114,7 +114,7 @@ public class LevelObjectManager
         Player.Update(gameTime);
 
 		Vector2 prospectiveMove = Player.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-        Vector2 validatedMove = Collision.ValidateMovement(Player.Rect, prospectiveMove);
+        Vector2 validatedMove = Collision.ValidateMovement(Player.RectF, prospectiveMove);
 
         if (!validatedMove.IsZero())
         {
