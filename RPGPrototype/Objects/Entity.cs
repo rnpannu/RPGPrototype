@@ -75,13 +75,27 @@ public abstract class Entity
 	{
 		
 	}
+	
+	public virtual void Think(GameTime gameTime) { }
 
-	public virtual void Update(GameTime gameTime)
+	public virtual void UpdateVelocity(GameTime gameTime) {}
+
+	public virtual void ApplyMovement(GameTime gameTime)
 	{
+		Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
 		if (Sprite is AnimatedSprite sprite)
 		{
 			sprite.Update(gameTime);
 		}
+	}
+
+	// convenience wrapper for anything that doesn't require collision resolution
+	public virtual void Update(GameTime gameTime)
+	{
+		Think(gameTime);
+		UpdateVelocity(gameTime);
+		ApplyMovement(gameTime);
+		// Should every entity have a state machine?
 	}
 
 	public virtual void Draw(GameTime gameTime)

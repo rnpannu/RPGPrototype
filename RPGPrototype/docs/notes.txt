@@ -5,3 +5,5 @@
 3. Collision
 
 //_arrivalSpeed = _maxVelocity * Math.Clamp(delta.LengthSquared() / 25, 0, 1); // 5 pixel slowing radius
+
+Look at compartmentalising code. Eg: player has animation component, physics/movement component, drawing component

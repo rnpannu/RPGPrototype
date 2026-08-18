@@ -159,7 +159,7 @@ public class CollisionManager
 	public void Draw(GameTime gameTime)
 	{
 		DrawCollisionGrid();
-		DrawPlayerIntersections();
+		//DrawPlayerIntersections();
 	}
 		// -- -----Utility drawing functions -------
 	/// <summary>
@@ -253,27 +253,3 @@ public class CollisionManager
 		}
 	}*/
 }
-
-/*
-public struct RectangleF
-{
-	public float X;
-	public float Y;
-	public float Width;
-	public float Height;
-
-	public RectangleF(float x, float y, float width, float height)
-	{
-		X = x;
-		Y = y;
-		Width = width;
-		Height = height;
-	}
-
-	public bool Intersects(RectangleF other)
-	{
-		return X < other.X + other.Width && X + Width > other.X &&
-		       Y < other.Y + other.Height && Y + Height > other.Y;
-	}
-}
-*/

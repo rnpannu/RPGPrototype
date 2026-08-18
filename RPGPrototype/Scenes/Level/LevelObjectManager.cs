@@ -17,13 +17,9 @@ namespace RPGPrototype.Scenes;
 /// </summary>
 public class LevelObjectManager
 {
-	private DebugMenu _debug;
-
 	// Todo: Create a better atlas parser that can iterate frames without specifying the coords of each one
 	private TextureAtlas _objectAtlas;
-
 	private readonly List<Enemy> _enemies = new();
-
 	private bool _drawPlayer = true;
 
 	public LevelObjectManager(LevelData map)
@@ -70,7 +66,6 @@ public class LevelObjectManager
 	public void InitializeDebug()
 	{
 		DebugMenu.Instance.Watch.RegisterWatch("player position", () => Vector2.Round(Player.Position).ToString());
-		//_debug.Watch.RegisterWatch("player position", () => Player.Position.ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("slime postion", () => _enemies[0].Position.ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player state", () => Player.StateMachine.CurrentState.Name.ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player movement direction", () => Player.MovementDirection.ToString());
@@ -102,7 +97,28 @@ public class LevelObjectManager
 			enemy.LoadContent(enemyAtlas);
 		}
 	}
+	
+	/// <summary>
+	/// Advance an entity's velocity, validate the resulting move against level collision,
+	/// zero velocity on any blocked axis, then run the entity's own Update.
+	/// </summary>
+	private void ResolveMovement(Entity entity, GameTime gameTime)
+	{
+		entity.Think(gameTime);
+		entity.UpdateVelocity(gameTime);
 
+		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+		Vector2 prospectiveMove = entity.Velocity * dt;
+		Vector2 validatedMove = Collision.ValidateMovement(entity.RectF, prospectiveMove);
+
+		Vector2 velocity = entity.Velocity;
+		if (validatedMove.X == 0) velocity.X = 0;
+		if (validatedMove.Y == 0) velocity.Y = 0;
+		entity.Velocity = velocity;
+
+		entity.ApplyMovement(gameTime);
+	}
+	
 	/// <summary>
 	/// Update entities and anything else that the object manager is responsible for.
 	/// </summary>
@@ -111,24 +127,12 @@ public class LevelObjectManager
 	public void Update(GameTime gameTime, Vector2 inputDirection)
 	{
 		Player.MovementDirection = inputDirection;
-        Player.Update(gameTime);
-
-		Vector2 prospectiveMove = Player.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-        Vector2 validatedMove = Collision.ValidateMovement(Player.RectF, prospectiveMove);
-
-        if (!validatedMove.IsZero())
-        {
-            Player.Move(validatedMove);
-        }
-        else
-        {
-            Player.Velocity = Vector2.Zero;
-        }
+		ResolveMovement(Player, gameTime);
 
 		foreach (var enemy in _enemies)
 		{
 			enemy.CheckLOS(Player.Position, Collision.MapCollisionGrid, Map.TileSize);
-			enemy.Update(gameTime);
+			ResolveMovement(enemy, gameTime);
 		}
 	}
 

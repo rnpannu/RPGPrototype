@@ -25,6 +25,8 @@ public class Enemy : Entity
 	private Vector2 _walkSpeed;
 	private Vector2 _pursueSpeed;
 	// last pursue tile index
+	
+	private float _speedFactor = 1.0f;
 
 	
 	public Enemy(Vector2 position) : base(position)
@@ -95,16 +97,11 @@ public class Enemy : Entity
 		
 	}
 
-	public virtual void Update(GameTime gameTime)
+	public override void Think(GameTime gameTime)
 	{
-		base.Update(gameTime);
-		if (StateMachine != null)
-		{
-			StateMachine.Update(gameTime);
-		}
-		
+		StateMachine?.Update(gameTime);
 	}
-
+	
 	public virtual void CheckLOS(Vector2 target, int[,] collisionGrid, int tileSize)
 	{
 		HasLOS = false;
@@ -141,7 +138,88 @@ public class Enemy : Entity
 			}
 		}
 	}
+	
+	/// <summary>
+	/// Set the movement direction towards the given target.
+	/// </summary>
+	/// <param name="gameTime"></param>
+	/// <param name="target"></param>
+	public void Follow(GameTime gameTime, Vector2 target)
+	{
+		Vector2 delta = target - Position;
+		float distance = delta.Length();
+		float arrivalTolerance = 1.5f; // 1.5 pixel zone for "reaching" target
+		float slowingRadius = 10f; // begin braking
+		
+		if (distance <= arrivalTolerance) // On top of target
+		{
+			Position = target;
+			MovementDirection = Vector2.Zero;
+			Velocity = Vector2.Zero;
+			_speedFactor = 0f;
+			return;
+		}
+		
+		MovementDirection = delta / distance; // Normalize direction value
+		
+		// Decay velocity if within slowing zone
+		_speedFactor = Math.Clamp(
+			distance / slowingRadius,
+			0f,
+			1f
+		);
+		
+	}
+	
+	public override void UpdateVelocity(GameTime gameTime)
+	{
+		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+		
+		if (MovementDirection.IsZero()) // decelerate
+		{
+			float speed = Velocity.Length();
+			float decelerationAmount = Acceleration.X * dt;
 
+			if (speed <= decelerationAmount)
+			{
+				Velocity = Vector2.Zero;
+			}
+			else
+			{
+				Velocity -= Vector2.Normalize(Velocity) * decelerationAmount;
+			}
+
+		}
+		else
+		{
+			float maxSpeed = _maxVelocity.X;
+			
+			Vector2 desiredVelocity = // without respect to current momentum
+				MovementDirection * maxSpeed * _speedFactor;
+			
+			// Steer towards intended direction and magnitude without breaking acceleration limit
+			
+			Vector2 steering = desiredVelocity - Velocity;
+			float maxVelocityChange = Acceleration.X * dt;// m/s^2 -> m/s
+			if (steering.LengthSquared() >
+			    maxVelocityChange * maxVelocityChange)
+			{
+				steering = Vector2.Normalize(steering)
+				           * maxVelocityChange;
+			}
+			Velocity += steering;
+			_speedFactor = 1f; // Reset every frame
+		}
+		// Clamp velocity
+		float maxSpeed2 = _maxVelocity.X;
+		if (Velocity.LengthSquared() >
+		    maxSpeed2 * maxSpeed2)
+		{
+			Velocity = Vector2.Normalize(Velocity) * maxSpeed2;
+		}
+		Velocity = Vector2.Clamp(Velocity, -_maxVelocity, _maxVelocity);
+	}
+	
 	public override void Draw(GameTime gameTime)
 	{
 		base.Draw(gameTime);

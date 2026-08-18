@@ -9,6 +9,8 @@ public class PlayerMovementState : PlayerState
 	public const string StateName = nameof(PlayerMovementState);
 	public override string Name => StateName;
 
+	private Vector2 LastMovementDirection { get; set; }
+	
 	public PlayerMovementState(Player player) : base(player)
 	{
 
@@ -17,16 +19,20 @@ public class PlayerMovementState : PlayerState
 	public override void Update(GameTime gameTime)
 	{
 		base.Update(gameTime);
-
+		
 		Vector2 input = Player.MovementDirection;
 		Vector2 speed = Player.Velocity;
-
-		if (input.LengthSquared() < 0.01f && speed.LengthSquared() < 0.01f)
+		
+		if (input != LastMovementDirection)
+		{
+			Player.UpdateAnimation(input);
+		}
+		LastMovementDirection = input;
+		
+		if (input.IsZero() && speed.IsZero())
 		{
 			Player.StateMachine.Transition(PlayerIdleState.StateName);
 			return;
 		}
-		Player.UpdateVelocity(gameTime);
-
 	}
 }

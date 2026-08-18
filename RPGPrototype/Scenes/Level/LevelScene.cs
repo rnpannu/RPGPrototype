@@ -34,7 +34,7 @@ public class LevelScene : Scene
 
 	public void AssignEvents()
 	{
-		_inputManager.MovementDirectionChange += _objectManager.Player.UpdateAnimation;
+		//_inputManager.MovementDirectionChange += _objectManager.Player.UpdateAnimation;
 	}
 
 	public void Reset()
