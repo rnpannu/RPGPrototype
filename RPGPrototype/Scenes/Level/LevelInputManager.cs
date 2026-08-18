@@ -28,6 +28,8 @@ public class LevelInputManager
 		get => _movementDir;
 		private set => _movementDir = value;
 	}
+	public Vector2 LastMovementDirection { get; private set; }
+	
 	public Matrix Transform
 	{
 		get => _transform;
@@ -41,7 +43,7 @@ public class LevelInputManager
 
 	public void Update(GameTime gameTime)
 	{
-		Vector2 prevDir = _movementDir;
+		LastMovementDirection = _movementDir;
 		_movementDir = Vector2.Zero;
 		
 		if (GameController.MoveUp()) _movementDir.Y--;
@@ -54,9 +56,9 @@ public class LevelInputManager
 			_movementDir.Normalize();
 		}
 
-		if (_movementDir != prevDir)
+		if (_movementDir != LastMovementDirection)// Smart design or hidden coupling?
 		{
-			MovementDirectionChange?.Invoke(_movementDir);
+			//MovementDirectionChange?.Invoke(_movementDir);
 		}
 	}
 	public void Draw(GameTime gameTime)
