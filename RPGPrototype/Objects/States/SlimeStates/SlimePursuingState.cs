@@ -13,7 +13,17 @@ public class SlimePursuingState : SlimeState
 	public SlimePursuingState(Slime slime) : base(slime)
 	{
 	}
+	
+	public override void Enter()
+	{
+		base.Enter();
+	}
 
+	public override void Exit()
+	{
+		base.Exit();
+	}
+	
 	public override void Update(GameTime gameTime)
 	{
         // if slime has LOS -> Pursue

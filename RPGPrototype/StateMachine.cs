@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using RPGPrototype.Log;
 
-namespace RPGPrototype.Objects.States;
+namespace RPGPrototype;
 
 public class StateMachine
 {

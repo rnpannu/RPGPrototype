@@ -87,19 +87,6 @@ public static class GameController
     {
         return s_mouse.ScrollWheelDelta < 0;
     }
-    
-    public static bool M1Released()
-    {
-        return s_mouse.WasButtonJustReleased(MouseButton.Left);
-    }
-    public static bool M1Clicked()
-    {
-        return s_mouse.WasButtonJustPressed(MouseButton.Left);
-    }
-    public static bool IsM1Down()
-    {
-        return s_mouse.IsButtonDown(MouseButton.Left);
-    }
     public static Vector2 MousePosition()
     {
         return s_mouse.Position.ToVector2();
@@ -117,6 +104,18 @@ public static class GameController
     public static bool DebugFlags()
     {
         return s_keyboard.WasKeyJustPressed(Keys.D2);
+    }
+    public static bool IsM1Down()
+    {
+        return s_mouse.IsButtonDown(MouseButton.Left);
+    }
+    public static bool M1Clicked()
+    {
+        return s_mouse.WasButtonJustPressed(MouseButton.Left);
+    }
+    public static bool M1Released()
+    {
+        return s_mouse.WasButtonJustReleased(MouseButton.Left);
     }
 }
 

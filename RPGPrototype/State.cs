@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace RPGPrototype.Objects.States;
+namespace RPGPrototype;
 
 public interface State
 {
@@ -11,4 +11,5 @@ public interface State
 
 	public void Update(GameTime gameTime);
 	
+	public void Draw(GameTime gameTime);
 }

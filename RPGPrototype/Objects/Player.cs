@@ -14,7 +14,7 @@ public class Player : Entity
 {
 	private AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
 	private List<Animation> _animations = new();
-
+	
 	public Player(Vector2 position) : base(position)
 	{
 		_maxVelocity = new Vector2(100, 100);
@@ -70,11 +70,6 @@ public class Player : Entity
 	public void Move(float xAmount, float yAmount, bool absolute = false)
 	{
 		Position = !absolute ? new Vector2(Position.X + xAmount, Position.Y + yAmount) : new Vector2(xAmount, yAmount);
-	}
-
-	public void Move(Vector2 validatedMove)
-    {
-		Position += validatedMove;
 	}
 	
 	/// <summary>

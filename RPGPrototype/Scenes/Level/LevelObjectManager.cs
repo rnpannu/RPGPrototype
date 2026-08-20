@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using RPGPrototype.Objects;
+using RPGPrototype.Scenes.Input;
 using RPGPrototype.UI.Debug;
 
 namespace RPGPrototype.Scenes;
@@ -62,7 +63,8 @@ public class LevelObjectManager
 		}
 		InitializeDebug();
 	}
-
+	
+	
 	public void InitializeDebug()
 	{
 		DebugMenu.Instance.Watch.RegisterWatch("player position", () => Vector2.Round(Player.Position).ToString());
@@ -99,8 +101,7 @@ public class LevelObjectManager
 	}
 	
 	/// <summary>
-	/// Advance an entity's velocity, validate the resulting move against level collision,
-	/// zero velocity on any blocked axis, then run the entity's own Update.
+	/// Advance an entity's velocity and validate the resulting move against level collision
 	/// </summary>
 	private void ResolveMovement(Entity entity, GameTime gameTime)
 	{
@@ -124,9 +125,9 @@ public class LevelObjectManager
 	/// </summary>
 	/// <param name="gameTime"></param>
 	/// <param name="dir"> The player movement direction given by the input manager </param>
-	public void Update(GameTime gameTime, Vector2 inputDirection)
+	public void Update(GameTime gameTime, PlayerInput input)
 	{
-		Player.MovementDirection = inputDirection;
+		Player.MovementDirection = input.MovementDirection;
 		ResolveMovement(Player, gameTime);
 
 		foreach (var enemy in _enemies)

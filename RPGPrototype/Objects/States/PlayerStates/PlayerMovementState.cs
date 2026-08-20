@@ -15,7 +15,17 @@ public class PlayerMovementState : PlayerState
 	{
 
 	}
+	
+	public override void Enter()
+	{
+		base.Enter();
+	}
 
+	public override void Exit()
+	{
+		base.Exit();
+	}
+	
 	public override void Update(GameTime gameTime)
 	{
 		base.Update(gameTime);
