@@ -4,20 +4,15 @@ namespace RPGPrototype.Objects.States.PlayerStates;
 
 public abstract class PlayerState : State
 {
+	public abstract string Name { get; }
+	
 	public PlayerState(Player player)
 	{
 		Player = player;
-		PlayerStateMachine = Player.StateMachine;
 	}
-	public abstract string Name { get; }
+
 	
 	protected Player Player
-	{
-		get => field;
-		set => field = value;
-	}
-	
-	protected StateMachine PlayerStateMachine
 	{
 		get => field;
 		set => field = value;
@@ -36,5 +31,10 @@ public abstract class PlayerState : State
 	public virtual void Update(GameTime gameTime)
 	{
 
+	}
+
+	public virtual void Draw(GameTime gameTime)
+	{
+		
 	}
 }

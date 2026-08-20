@@ -17,7 +17,17 @@ public class SlimeIdleState : SlimeState
 		int randomIndex = Random.Shared.Next(Slime.PatrolPoints.Count);
 		TargetPoint = Slime.PatrolPoints[randomIndex];
 	}
+	
+	public override void Enter()
+	{
+		base.Enter();
+	}
 
+	public override void Exit()
+	{
+		base.Exit();
+	}
+	
 	public override void Update(GameTime gameTime)
 	{
 		base.Update(gameTime);

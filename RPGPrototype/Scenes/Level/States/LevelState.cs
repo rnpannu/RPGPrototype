@@ -1,30 +1,25 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace RPGPrototype.Objects.States.SlimeStates;
+namespace RPGPrototype.Scenes.States;
 
-public abstract class SlimeState : State
+public abstract class LevelState : State
 {
 	public abstract string Name { get; }
-	
-	public SlimeState(Slime slime)
+
+	public LevelState(LevelScene level) // just pass in the scene for now. Later create new Level object?
 	{
-		Slime = slime;
+		Level = level;
 	}
-	
-	protected Slime Slime
-	{
-		get => field;
-		set => field = value;
-	}
-	
+
+	public LevelScene Level { get; protected set; }
 	public virtual void Enter()
 	{
-		
+
 	}
 
 	public virtual void Exit()
 	{
-		
+
 	}
 
 	public virtual void Update(GameTime gameTime)
@@ -34,6 +29,6 @@ public abstract class SlimeState : State
 
 	public virtual void Draw(GameTime gameTime)
 	{
-		
+
 	}
 }

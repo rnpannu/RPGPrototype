@@ -39,8 +39,7 @@ public class Enemy : Entity
 		get => field;
 		protected set => field = value;
 	}
-
-	/*public override Vector2 Position { get; set; }*/
+	
 	public int DetectionDistance { get; protected set; }
 	
 	public bool HasLOS { get; protected set;  }
