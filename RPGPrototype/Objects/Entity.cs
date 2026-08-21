@@ -47,10 +47,6 @@ public abstract class Entity
 			{
 				FacingDirection = field;
 			}
-			else
-			{
-				FacingDirection = new Vector2(0, 1);
-			}
 		}
 	}
 
@@ -82,7 +78,7 @@ public abstract class Entity
 			Sprite.Width,
 			Sprite.Height);
 
-	public virtual Rectangle Hitbox { get; protected set; }
+	public virtual RectangleF Hitbox { get; protected set; }
 	
 	public virtual void Initialize()
 	{
@@ -128,6 +124,6 @@ public abstract class Entity
 		int tileSize = 16;
 		Texture2D rectangleTexture = new Texture2D(Core.GraphicsDevice, 1, 1);
 		rectangleTexture.SetData(new Color[] {new (255, 0, 0, 255)});
-		Core.SpriteBatch.Draw(rectangleTexture, Rect, Color.Lavender);
+		Core.SpriteBatch.Draw(rectangleTexture, new Rectangle((int) Hitbox.X, (int) Hitbox.Y, (int) Hitbox.Width, (int) Hitbox.Height), Color.Lavender);
 	}
 }

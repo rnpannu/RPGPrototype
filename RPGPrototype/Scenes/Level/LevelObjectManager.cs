@@ -67,16 +67,21 @@ public class LevelObjectManager
 	
 	public void InitializeDebug()
 	{
-		DebugMenu.Instance.Watch.RegisterWatch("player position", () => Vector2.Round(Player.Position).ToString());
-		DebugMenu.Instance.Watch.RegisterWatch("slime postion", () => _enemies[0].Position.ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player state", () => Player.StateMachine.CurrentState.Name.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("player position", () => Vector2.Round(Player.Position).ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player movement direction", () => Player.MovementDirection.ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player velocity", () => Vector2.Round(Player.Velocity).ToString());
-		DebugMenu.Instance.Watch.RegisterWatch("player prospective move", () => Vector2.Round(Player.Velocity * Core.DT).ToString());
-		DebugMenu.Instance.Watch.RegisterWatch("player prospective move2", () => Vector2.Round(Player.Position + (Player.Velocity * Core.DT)).ToString());
-		DebugMenu.Instance.Watch.RegisterWatch("? Slime LOS", () => _enemies[0].HasLOS.ToString());
-		DebugMenu.Instance.Watch.RegisterWatch("Current Slime State", () => _enemies[0].StateMachine.CurrentState.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("player prospective move relative", () => Vector2.Round(Player.Velocity * Core.DT).ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("player prospective move absolute", () => Vector2.Round(Player.Position + (Player.Velocity * Core.DT)).ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("player current animation", () => Player.CurrentAnimation.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("player facing direction", () => Vector2.Round(Player.FacingDirection).ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("", () => "");
+		DebugMenu.Instance.Watch.RegisterWatch("slime postion", () => _enemies[0].Position.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("Slime LOS", () => _enemies[0].HasLOS.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("Current Slime State", () => _enemies[0].StateMachine.CurrentState.Name.ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("LOS target", () => _enemies[0].CurrentLOSTarget.ToString());
+		
+		
 		DebugMenu.Instance.Flags.RegisterFlag("Show Hitboxes" ,() => {
 			Collision.ShowHitboxes = !Collision.ShowHitboxes;
 		});
@@ -110,7 +115,7 @@ public class LevelObjectManager
 
 		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 		Vector2 prospectiveMove = entity.Velocity * dt;
-		Vector2 validatedMove = Collision.ValidateMovement(entity.RectF, prospectiveMove);
+		Vector2 validatedMove = Collision.ValidateMovement(entity.Hitbox, prospectiveMove);
 
 		Vector2 velocity = entity.Velocity;
 		if (validatedMove.X == 0) velocity.X = 0;
