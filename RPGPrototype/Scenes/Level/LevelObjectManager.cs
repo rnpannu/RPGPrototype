@@ -22,15 +22,7 @@ public class LevelObjectManager
 	private TextureAtlas _objectAtlas;
 	private readonly List<Enemy> _enemies = new();
 	private bool _drawPlayer = true;
-
-	public LevelObjectManager(LevelData map)
-	{
-		Map = map;
-		Collision = new CollisionManager(map);
-
-		Initialize();
-	}
-
+	
 	public CollisionManager Collision
 	{
 		get => field;
@@ -50,6 +42,14 @@ public class LevelObjectManager
 	}
 
 	public bool CanSlimeSee { get; private set; }
+
+	public LevelObjectManager(LevelData map)
+	{
+		Map = map;
+		Collision = new CollisionManager(map);
+
+		Initialize();
+	}
 
 	public void Initialize()
 	{
@@ -127,7 +127,7 @@ public class LevelObjectManager
 	/// <param name="dir"> The player movement direction given by the input manager </param>
 	public void Update(GameTime gameTime, PlayerInput input)
 	{
-		Player.MovementDirection = input.MovementDirection;
+		Player.CurrentInput = input;
 		ResolveMovement(Player, gameTime);
 
 		foreach (var enemy in _enemies)

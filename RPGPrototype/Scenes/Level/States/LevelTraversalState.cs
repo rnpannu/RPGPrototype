@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using RPGPrototype.Objects;
 using RPGPrototype.Scenes.Input;
 
 namespace RPGPrototype.Scenes.States;
@@ -28,6 +29,12 @@ public class LevelTraversalState : LevelState
 	{
 		base.Update(gameTime);
 		PlayerInput playerInput = Level.InputManager.GetPlayerInput(gameTime);
+		if (playerInput.Quit)
+		{
+			Level.Reset();
+			return;
+		}
+
 		Level.ObjectManager.Update(gameTime, playerInput);
 		Level.Camera.Follow(Level.ObjectManager.Player.Position);
 	}

@@ -13,7 +13,6 @@ namespace RPGPrototype.Scenes;
 /// </summary>
 public class LevelInputManager
 {
-	
 	public LevelInputManager()
 	{
 		Initialize();
@@ -38,8 +37,19 @@ public class LevelInputManager
 		{
 			movementDir.Normalize();
 		}
-		
-		return new PlayerInput(movementDir, false);
+
+		bool esc = false;
+		bool debug = false;
+		if (GameController.Exit())
+		{
+			esc = true;
+		}
+
+		if (GameController.ToggleDebug())
+		{
+			debug = true;
+		}
+		return new PlayerInput(movementDir, false, esc);
 	}
 
 	/*public InventoryInput GetInventoryInput(GameTime gameTime)
