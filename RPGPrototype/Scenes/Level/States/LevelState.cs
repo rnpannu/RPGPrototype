@@ -1,30 +1,25 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace RPGPrototype.Objects.States.PlayerStates;
+namespace RPGPrototype.Scenes.States;
 
-public abstract class PlayerState : State
+public abstract class LevelState : State
 {
 	public abstract string Name { get; }
-		
-	protected Player Player
+
+	public LevelState(LevelScene level) // just pass in the scene for now. Later create new Level object?
 	{
-		get => field;
-		set => field = value;
+		Level = level;
 	}
-	
-	public PlayerState(Player player)
-	{
-		Player = player;
-	}
-	
+
+	public LevelScene Level { get; protected set; }
 	public virtual void Enter()
 	{
-		
+
 	}
 
 	public virtual void Exit()
 	{
-		
+
 	}
 
 	public virtual void Update(GameTime gameTime)
@@ -34,6 +29,6 @@ public abstract class PlayerState : State
 
 	public virtual void Draw(GameTime gameTime)
 	{
-		
+
 	}
 }

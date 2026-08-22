@@ -4,12 +4,12 @@ namespace RPGPrototype.Objects.States.SlimeStates;
 
 public abstract class SlimeState : State
 {
+	public abstract string Name { get; }
+	
 	public SlimeState(Slime slime)
 	{
 		Slime = slime;
-		SlimeStateMachine = Slime.StateMachine;
 	}
-	public abstract string Name { get; }
 	
 	protected Slime Slime
 	{
@@ -17,12 +17,6 @@ public abstract class SlimeState : State
 		set => field = value;
 	}
 	
-	protected StateMachine SlimeStateMachine
-	{
-		get => field;
-		set => field = value;
-	}
-
 	public virtual void Enter()
 	{
 		
@@ -36,5 +30,10 @@ public abstract class SlimeState : State
 	public virtual void Update(GameTime gameTime)
 	{
 
+	}
+
+	public virtual void Draw(GameTime gameTime)
+	{
+		
 	}
 }

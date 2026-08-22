@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
+using MonoGameLibrary.Graphics;
 using RPGPrototype.Objects;
 using RPGPrototype.UI.Debug;
 
@@ -52,12 +53,11 @@ public class CollisionManager
 
     }
 
-    public Vector2 ValidateMovement(Rectangle target, Vector2 prospectiveMove)
+    public Vector2 ValidateMovement(RectangleF target, Vector2 prospectiveMove)
     {
         int tileSize = Map.TileSize;
         Vector2 validatedMove = prospectiveMove;
-
-        Rectangle prospectiveMoveX = new Rectangle(target.X + (int)prospectiveMove.X * 2, target.Y, target.Width, target.Height );
+        RectangleF prospectiveMoveX = new RectangleF(target.X + prospectiveMove.X, target.Y, target.Width, target.Height );
 
         _tileIntersections = GetIntersectingTilesHorizontal(prospectiveMoveX);
 
@@ -66,7 +66,7 @@ public class CollisionManager
             if (MapCollisionGrid[tile.Y, tile.X] == 1)
             {
                 if (prospectiveMoveX.Intersects(
-                    new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
+                    new RectangleF(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
                 {
                     validatedMove.X = 0;
                     break;
@@ -79,7 +79,7 @@ public class CollisionManager
             validatedMove.X = 0;
         }
 
-        Rectangle prospectiveMoveY = new Rectangle( target.X + (int)validatedMove.X * 2, target.Y + (int)prospectiveMove.Y * 2, target.Width, target.Height );
+        RectangleF prospectiveMoveY = new RectangleF(target.X + validatedMove.X, target.Y + prospectiveMove.Y, target.Width, target.Height);
 
         _tileIntersections = GetIntersectingTilesVertical(prospectiveMoveY);
 
@@ -88,7 +88,7 @@ public class CollisionManager
             if (MapCollisionGrid[tile.Y, tile.X] == 1)
             {
                 if (prospectiveMoveY.Intersects(
-                    new Rectangle(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
+                    new RectangleF(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
                 {
                     validatedMove.Y = 0;
                     break;
@@ -103,23 +103,27 @@ public class CollisionManager
         return validatedMove;
     }
 
-	public List<Rectangle> GetIntersectingTilesHorizontal(Rectangle target)
+	public List<Rectangle> GetIntersectingTilesHorizontal(RectangleF target)
 	{
 		List<Rectangle> intersections = new();
 
         int tileSize = Map.TileSize;
-        int targetWidth = target.Width * 3;
-
+        float targetWidth = target.Width;
+        int targetWidthInt = (int)target.Width;
+        float targetHeight = target.Height;
+        int targetHeightInt = (int)target.Height;
 		// Get hitbox in tiles
-		int widthInTiles = (targetWidth - (target.Width % tileSize)) / tileSize;
-		int heightInTiles = (target.Height - (target.Height % tileSize)) / tileSize;
+		int widthInTiles =  (targetWidthInt - (targetWidthInt % tileSize)) / tileSize;
+		int heightInTiles = (targetHeightInt - (targetHeightInt % tileSize)) / tileSize;
+		/*int widthInTiles = (targetWidth - (target.Width % tileSize)) / tileSize;
+		int heightInTiles = (target.Height - (target.Height % tileSize)) / tileSize;*/
 
 		for (int x = 0; x <= widthInTiles; x++) {
 			for (int y = 0; y <= heightInTiles; y++) {
 
 				intersections.Add(new Rectangle(
-					(target.X + x * tileSize) / tileSize,
-					(target.Y + y*(tileSize-1)) / tileSize,
+					((int)target.X + x * tileSize) / tileSize,
+					((int)target.Y + y*(tileSize-1)) / tileSize,
 					tileSize,
 					tileSize
 				));
@@ -129,21 +133,21 @@ public class CollisionManager
 		return intersections;
 	}
 
-	public List<Rectangle> GetIntersectingTilesVertical(Rectangle target)
+	public List<Rectangle> GetIntersectingTilesVertical(RectangleF target)
 	{
 		List<Rectangle> intersections = new();
 
 		int tileSize = Map.TileSize;
-		int widthInTiles = (target.Width - (target.Width % tileSize)) / tileSize;
-		int heightInTiles = (target.Height - (target.Height % tileSize)) / tileSize;
+		int widthInTiles = ((int)target.Width - ((int)target.Width % tileSize)) / tileSize;
+		int heightInTiles = ((int)target.Height - ((int)target.Height % tileSize)) / tileSize;
 
 		for (int x = 0; x <= widthInTiles; x++) {
 			for (int y = 0; y <= heightInTiles; y++) {
 
 				intersections.Add(new Rectangle(
 
-					(target.X + x*(tileSize - 1)) / tileSize,
-					(target.Y + y*tileSize) / tileSize,
+					((int)target.X + x*(tileSize - 1)) / tileSize,
+					((int)target.Y + y*tileSize) / tileSize,
 					tileSize,
 					tileSize
 				));
@@ -155,7 +159,7 @@ public class CollisionManager
 	public void Draw(GameTime gameTime)
 	{
 		DrawCollisionGrid();
-		DrawPlayerIntersections();
+		//DrawPlayerIntersections();
 	}
 		// -- -----Utility drawing functions -------
 	/// <summary>

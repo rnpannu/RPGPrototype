@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
 using RenderingLibrary.Graphics;
 using RPGPrototype.Objects;
+using RPGPrototype.Scenes.Input;
 
 namespace RPGPrototype.Scenes;
 
@@ -12,54 +13,52 @@ namespace RPGPrototype.Scenes;
 /// </summary>
 public class LevelInputManager
 {
-	private Matrix _transform;
-	private Vector2 _movementDir;
-	private Vector2 _cameraPosition;
-
-	public event Action<Vector2> MovementDirectionChange;
-	
 	public LevelInputManager()
 	{
 		Initialize();
-	}
-
-	public Vector2 CurrentMovementDirection
-	{
-		get => _movementDir;
-		private set => _movementDir = value;
-	}
-	public Matrix Transform
-	{
-		get => _transform;
-		private set => _transform = value;
 	}
 	
 	public void Initialize()
 	{
 
 	}
-
-	public void Update(GameTime gameTime)
+		
+	public PlayerInput GetPlayerInput(GameTime gameTime)
 	{
-		Vector2 prevDir = _movementDir;
-		_movementDir = Vector2.Zero;
+		//LastMovementDirection = _movementDir;
+		Vector2 movementDir = Vector2.Zero;
 		
-		if (GameController.MoveUp()) _movementDir.Y--;
-		if (GameController.MoveDown()) _movementDir.Y++;
-		if (GameController.MoveLeft()) _movementDir.X--;
-		if (GameController.MoveRight()) _movementDir.X++;
+		if (GameController.MoveUp()) movementDir.Y--;
+		if (GameController.MoveDown()) movementDir.Y++;
+		if (GameController.MoveLeft()) movementDir.X--;
+		if (GameController.MoveRight()) movementDir.X++;
 		
-		if (_movementDir != Vector2.Zero)
+		if (movementDir != Vector2.Zero)
 		{
-			_movementDir.Normalize();
+			movementDir.Normalize();
 		}
 
-		if (_movementDir != prevDir)
+		bool esc = false;
+		bool debug = false;
+		if (GameController.Exit())
 		{
-			MovementDirectionChange?.Invoke(_movementDir);
+			esc = true;
 		}
+
+		if (GameController.ToggleDebug())
+		{
+			debug = true;
+		}
+		return new PlayerInput(movementDir, false, esc);
 	}
+
+	/*public InventoryInput GetInventoryInput(GameTime gameTime)
+	{
+		
+	}*/
+	
 	public void Draw(GameTime gameTime)
 	{
+		
 	}
 }

@@ -5,3 +5,8 @@
 3. Collision
 
 //_arrivalSpeed = _maxVelocity * Math.Clamp(delta.LengthSquared() / 25, 0, 1); // 5 pixel slowing radius
+
+Look at compartmentalising code. Eg: 
+
+
+Interesting design ideas around events: https://claude.ai/chat/82f232b9-9541-4ec4-9d41-7bf29435395e

@@ -11,9 +11,9 @@ public class AnimatedSprite : Sprite
 {
     private int _currentFrame;
     private TimeSpan _elapsed;
-    private Animation _animation;
+    private Animation? _animation;
 
-    public Animation Animation
+    public Animation? Animation
     {
         get => _animation;
         set
@@ -28,7 +28,7 @@ public class AnimatedSprite : Sprite
 
     }
 
-    public AnimatedSprite(Animation animation)
+    public AnimatedSprite(Animation? animation)
     {
         _animation = animation;
         Region = _animation.Frames[0];

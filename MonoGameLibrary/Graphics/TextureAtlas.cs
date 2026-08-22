@@ -18,19 +18,19 @@ public class TextureAtlas
     private Dictionary<string, TextureRegion> _regions;
     public Texture2D Texture { get; set; }
 
-    public Dictionary<string, Animation> _animations;
+    public Dictionary<string, Animation?> _animations;
 
     public TextureAtlas()
     {
         _regions = new Dictionary<string, TextureRegion>();
-        _animations = new Dictionary<string, Animation>();
+        _animations = new Dictionary<string, Animation?>();
     }
 
     public TextureAtlas(Texture2D texture)
     {
         Texture = texture; 
         _regions = new Dictionary<string, TextureRegion>();
-        _animations = new Dictionary<string, Animation>();
+        _animations = new Dictionary<string, Animation?>();
     }
 
     public void AddRegion(string name, int x, int y, int width, int height)
@@ -60,12 +60,12 @@ public class TextureAtlas
         return new Sprite(region);
     }
 
-    public void AddAnimation(string animationName, Animation animation)
+    public void AddAnimation(string animationName, Animation? animation)
     {
         _animations.Add(animationName, animation);
     }
 
-    public Animation GetAnimation(string animationName)
+    public Animation? GetAnimation(string animationName)
     {
         return _animations[animationName];
     }
@@ -77,7 +77,7 @@ public class TextureAtlas
 
     public AnimatedSprite CreateAnimatedSprite(string animationName)
     {
-        Animation animation = GetAnimation(animationName);
+        Animation? animation = GetAnimation(animationName);
         return new AnimatedSprite(animation);
 
     }
@@ -147,7 +147,7 @@ public class TextureAtlas
                             }
                         }
 
-                        Animation animation = new Animation(frames, delay);
+                        Animation? animation = new Animation(frames, delay);
                         atlas.AddAnimation(name, animation);
 
                     }

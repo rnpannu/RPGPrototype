@@ -36,20 +36,34 @@ public abstract class Entity
 			field = value;
 		}
 	}
-	public virtual Vector2 MovementDirection { get; 
-		set => field = value.SnapToZero(); }
-	
-	public virtual Vector2 FacingDirection { get;
-		set => field = value.SnapToZero();
+
+	public virtual Vector2 MovementDirection
+	{
+		get => field;
+		set
+		{
+			field = value.SnapToZero(); // Input direction
+			if (field != Vector2.Zero)
+			{
+				FacingDirection = field;
+			}
+		}
 	}
+
+	public virtual Vector2 FacingDirection
+	{
+		get => field;
+		set => field = value.SnapToZero();
+	} = new Vector2(0, 1); // facing down
 
 	public virtual Vector2 Velocity
 	{
-		get;
+		get => field;
 		set => field = value.SnapToZero();
 	}
 	
-	public virtual Vector2 Acceleration { get; 
+	public virtual Vector2 Acceleration { 
+		get => field; 
 		set => field = value.SnapToZero(); }
 	
 	public virtual Rectangle Rect =>
@@ -57,8 +71,14 @@ public abstract class Entity
 			(int)(Position.Y - Sprite.Origin.Y),
 			(int)Sprite.Width,
 			(int)Sprite.Height);
+	
+	public virtual RectangleF RectF =>
+		new RectangleF((Position.X - Sprite.Origin.X),
+			(Position.Y - Sprite.Origin.Y),
+			Sprite.Width,
+			Sprite.Height);
 
-	public virtual Rectangle Hitbox { get; protected set; }
+	public virtual RectangleF Hitbox { get; protected set; }
 	
 	public virtual void Initialize()
 	{
@@ -69,13 +89,26 @@ public abstract class Entity
 	{
 		
 	}
+	
+	public virtual void Think(GameTime gameTime) { }
 
-	public virtual void Update(GameTime gameTime)
+	public virtual void UpdateVelocity(GameTime gameTime) {}
+
+	public virtual void ApplyMovement(GameTime gameTime)
 	{
+		Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
 		if (Sprite is AnimatedSprite sprite)
 		{
 			sprite.Update(gameTime);
 		}
+	}
+
+	// convenience wrapper for anything that doesn't require collision resolution
+	public virtual void Update(GameTime gameTime) // Should every entity have a state machine?
+	{
+		Think(gameTime);
+		UpdateVelocity(gameTime);
+		ApplyMovement(gameTime);
 	}
 
 	public virtual void Draw(GameTime gameTime)
@@ -91,6 +124,6 @@ public abstract class Entity
 		int tileSize = 16;
 		Texture2D rectangleTexture = new Texture2D(Core.GraphicsDevice, 1, 1);
 		rectangleTexture.SetData(new Color[] {new (255, 0, 0, 255)});
-		Core.SpriteBatch.Draw(rectangleTexture, Rect, Color.Lavender);
+		Core.SpriteBatch.Draw(rectangleTexture, new Rectangle((int) Hitbox.X, (int) Hitbox.Y, (int) Hitbox.Width, (int) Hitbox.Height), Color.Lavender);
 	}
 }
