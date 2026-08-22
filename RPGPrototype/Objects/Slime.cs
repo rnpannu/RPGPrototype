@@ -19,6 +19,7 @@ public class Slime : Enemy
 		_maxVelocity = new Vector2(40, 40);
 		Acceleration = new Vector2(800, 800);
 		DetectionDistance = 100;
+		Hitbox = new RectangleF(Position.X - 4, Position.Y - 4, 8, 8);
 	}
 
 	public AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;

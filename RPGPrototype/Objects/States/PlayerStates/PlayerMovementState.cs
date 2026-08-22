@@ -5,7 +5,6 @@ namespace RPGPrototype.Objects.States.PlayerStates;
 
 public class PlayerMovementState : PlayerState
 {
-	// lastMoveDir, basespeed, health, maxhealth, attackdir, scale,
 	public const string StateName = nameof(PlayerMovementState);
 	public override string Name => StateName;
 
@@ -19,6 +18,7 @@ public class PlayerMovementState : PlayerState
 	public override void Enter()
 	{
 		base.Enter();
+		Player.SetAnimation(Player.AnimationKey.Walk, Player.CurrentAnimation.Item2);
 	}
 
 	public override void Exit()
@@ -30,16 +30,18 @@ public class PlayerMovementState : PlayerState
 	{
 		base.Update(gameTime);
 		
-		Vector2 input = Player.MovementDirection;
+		Vector2 moveDir = Player.MovementDirection;
 		Vector2 speed = Player.Velocity;
 		
-		if (input != LastMovementDirection)
+		if (moveDir != LastMovementDirection && !moveDir.IsZero())
 		{
-			Player.UpdateAnimation(input);
+			// Can potentially move UpdateAnimation trigger into FacingDirection
+			// property setter, will see after implementing attacks
+			//Player.UpdateAnimation();
 		}
-		LastMovementDirection = input;
+		LastMovementDirection = moveDir;
 		
-		if (input.IsZero() && speed.IsZero())
+		if (moveDir.IsZero() && speed.IsZero())
 		{
 			Player.StateMachine.Transition(PlayerIdleState.StateName);
 			return;
