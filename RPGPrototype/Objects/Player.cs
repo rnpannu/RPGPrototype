@@ -13,6 +13,8 @@ namespace RPGPrototype.Objects;
 
 public class Player : Entity
 {
+	private TimeSpan _attackTimer;
+	
 	public StateMachine StateMachine
 	{
 		get => field;
@@ -20,7 +22,18 @@ public class Player : Entity
 	}
 	
 	public PlayerInput CurrentInput { get; set; }
-	
+
+	public override Vector2 FacingDirection {
+		get => base.FacingDirection;
+		set
+		{
+			if (value != base.FacingDirection)
+			{
+				base.FacingDirection = value;
+				UpdateAnimation();
+			}
+		} }
+
 	public override RectangleF Hitbox => new RectangleF(Position.X - 6, Position.Y - 8, 12, 16);	 // magic numbers from spritesheet
 
 	public enum AnimationKey { Idle, Walk, Attack, Dead }
@@ -80,10 +93,6 @@ public class Player : Entity
 	)
 	{
 		MovementDirection = CurrentInput.MovementDirection;
-		if (!MovementDirection.IsZero())
-		{
-			FacingDirection = MovementDirection;
-		}
 	}
 	/// <summary>
 	/// Increase or decay velocity according to current movement input. Permit wall sliding by retaining velocity in other directions.
@@ -165,6 +174,7 @@ public class Player : Entity
 			}
 		}
 	}
+	
 	/// <summary>
 	/// Change the player's animation upon a movement direction change
 	/// </summary>

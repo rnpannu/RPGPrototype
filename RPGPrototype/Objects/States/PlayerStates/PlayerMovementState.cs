@@ -37,8 +37,7 @@ public class PlayerMovementState : PlayerState
 		{
 			// Can potentially move UpdateAnimation trigger into FacingDirection
 			// property setter, will see after implementing attacks
-			Player.FacingDirection = moveDir; 
-			Player.UpdateAnimation();
+			//Player.UpdateAnimation();
 		}
 		LastMovementDirection = moveDir;
 		

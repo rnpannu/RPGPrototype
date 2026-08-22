@@ -47,7 +47,7 @@
         
     </Regions>
     <Animations>
-        <Animation name="player-idle-down" delay = "200">
+        <Animation name="player-idle-down" delay = "250">
             <Frame region="player-idle-down1"/>
             <Frame region="player-idle-down2"/>
             <Frame region="player-idle-down3"/>
@@ -56,7 +56,7 @@
             <Frame region="player-idle-down6"/>
         </Animation>
 
-        <Animation name="player-idle-up" delay = "200">
+        <Animation name="player-idle-up" delay = "250">
             <Frame region="player-idle-up1"/>
             <Frame region="player-idle-up2"/>
             <Frame region="player-idle-up3"/>
@@ -65,7 +65,7 @@
             <Frame region="player-idle-up6"/>
         </Animation>
 
-        <Animation name="player-idle-right" delay = "200">
+        <Animation name="player-idle-right" delay = "250">
             <Frame region="player-idle-right1"/>
             <Frame region="player-idle-right2"/>
             <Frame region="player-idle-right3"/>
@@ -74,7 +74,7 @@
             <Frame region="player-idle-right6"/>
         </Animation>
         
-        <Animation name="player-walking-right" delay = "200">
+        <Animation name="player-walking-right" delay = "250">
         <Frame region="player-walking-right1"/>
         <Frame region="player-walking-right2"/>
         <Frame region="player-walking-right3"/>
@@ -83,7 +83,7 @@
         <Frame region="player-walking-right6"/>
         </Animation>
 
-        <Animation name="player-walking-up" delay = "200">
+        <Animation name="player-walking-up" delay = "250">
             <Frame region="player-walking-up1"/>
             <Frame region="player-walking-up2"/>
             <Frame region="player-walking-up3"/>
@@ -92,7 +92,7 @@
             <Frame region="player-walking-up6"/>
         </Animation>
 
-        <Animation name="player-walking-down" delay = "200">
+        <Animation name="player-walking-down" delay = "250">
             <Frame region="player-walking-down1"/>
             <Frame region="player-walking-down2"/>
             <Frame region="player-walking-down3"/>
