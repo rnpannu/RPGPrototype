@@ -1,14 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using MonoGameLibrary;
 
 namespace RPGPrototype.Objects.States.PlayerStates;
 
 public class PlayerMovementState : PlayerState
 {
-	public const string StateName = nameof(PlayerMovementState);
-	public override string Name => StateName;
-
 	private Vector2 LastMovementDirection { get; set; }
+	
+	public event Action RequestTransitionToIdle;
 	
 	public PlayerMovementState(Player player) : base(player)
 	{
@@ -43,8 +43,10 @@ public class PlayerMovementState : PlayerState
 		
 		if (moveDir.IsZero() && speed.IsZero())
 		{
-			Player.StateMachine.Transition(PlayerIdleState.StateName);
-			return;
+			//Player.StateMachine.Transition(typeof(PlayerIdleState));
+			RequestTransitionToIdle?.Invoke();
 		}
 	}
+
+	
 }

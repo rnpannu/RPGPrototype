@@ -67,7 +67,7 @@ public class LevelObjectManager
 	
 	public void InitializeDebug()
 	{
-		DebugMenu.Instance.Watch.RegisterWatch("player state", () => Player.StateMachine.CurrentState.Name.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("player state", () => Player.StateMachine.CurrentState.GetType().Name);
 		DebugMenu.Instance.Watch.RegisterWatch("player position", () => Vector2.Round(Player.Position).ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player movement direction", () => Player.MovementDirection.ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player velocity", () => Vector2.Round(Player.Velocity).ToString());
@@ -76,9 +76,10 @@ public class LevelObjectManager
 		DebugMenu.Instance.Watch.RegisterWatch("player current animation", () => Player.CurrentAnimation.ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("player facing direction", () => Vector2.Round(Player.FacingDirection).ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("", () => "");
-		DebugMenu.Instance.Watch.RegisterWatch("slime postion", () => _enemies[0].Position.ToString());
+		var slime = _enemies[0];
+		DebugMenu.Instance.Watch.RegisterWatch("slime postion", () => Vector2.Round(slime.Position).ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("Slime LOS", () => _enemies[0].HasLOS.ToString());
-		DebugMenu.Instance.Watch.RegisterWatch("Current Slime State", () => _enemies[0].StateMachine.CurrentState.Name.ToString());
+		DebugMenu.Instance.Watch.RegisterWatch("Current Slime State", () => nameof(slime.StateMachine.CurrentState));
 		DebugMenu.Instance.Watch.RegisterWatch("LOS target", () => _enemies[0].CurrentLOSTarget.ToString());
 		
 		

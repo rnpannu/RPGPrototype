@@ -115,9 +115,7 @@ public class CollisionManager
 		// Get hitbox in tiles
 		int widthInTiles =  (targetWidthInt - (targetWidthInt % tileSize)) / tileSize;
 		int heightInTiles = (targetHeightInt - (targetHeightInt % tileSize)) / tileSize;
-		/*int widthInTiles = (targetWidth - (target.Width % tileSize)) / tileSize;
-		int heightInTiles = (target.Height - (target.Height % tileSize)) / tileSize;*/
-
+		
 		for (int x = 0; x <= widthInTiles; x++) {
 			for (int y = 0; y <= heightInTiles; y++) {
 

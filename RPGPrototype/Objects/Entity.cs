@@ -125,5 +125,6 @@ public abstract class Entity
 		Texture2D rectangleTexture = new Texture2D(Core.GraphicsDevice, 1, 1);
 		rectangleTexture.SetData(new Color[] {new (255, 0, 0, 255)});
 		Core.SpriteBatch.Draw(rectangleTexture, new Rectangle((int) Hitbox.X, (int) Hitbox.Y, (int) Hitbox.Width, (int) Hitbox.Height), Color.Lavender);
+		//Core.SpriteBatch.Draw(rectangleTexture, Rect, Color.Lavender);
 	}
 }

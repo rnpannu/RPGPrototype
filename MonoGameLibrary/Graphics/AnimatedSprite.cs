@@ -34,6 +34,10 @@ public class AnimatedSprite : Sprite
         Region = _animation.Frames[0];
     }
 
+    public void ResetAnimation()
+    {
+        _currentFrame = 0;
+    }
     public void Update(GameTime gameTime)
     {
         _elapsed += gameTime.ElapsedGameTime;

@@ -9,9 +9,6 @@ public class SlimeIdleState : SlimeState
 {
 	private Vector2 TargetPoint { get; set; }
 	
-	public const string StateName = nameof(SlimeIdleState);
-	public override string Name => StateName;
-	
 	public SlimeIdleState(Slime slime) : base(slime)
 	{
 		int randomIndex = Random.Shared.Next(Slime.PatrolPoints.Count);
@@ -34,7 +31,7 @@ public class SlimeIdleState : SlimeState
 		
 		if (Slime.HasLOS)
 		{
-			Slime.StateMachine.Transition(SlimePursuingState.StateName);
+			Slime.StateMachine.Transition(typeof(SlimePursuingState));
 			return;
 		}
 		else

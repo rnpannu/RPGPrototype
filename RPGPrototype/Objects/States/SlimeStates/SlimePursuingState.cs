@@ -7,9 +7,7 @@ namespace RPGPrototype.Objects.States.SlimeStates;
 
 public class SlimePursuingState : SlimeState
 {
-	public const string StateName = nameof(SlimePursuingState);
-	public override string Name => StateName;
-
+	
 	public SlimePursuingState(Slime slime) : base(slime)
 	{
 	}
@@ -36,7 +34,7 @@ public class SlimePursuingState : SlimeState
         {
             if (Slime.Position.IsApproximately(lastLOS, 1.5f))
             {
-                Slime.StateMachine.Transition(SlimeIdleState.StateName);
+                Slime.StateMachine.Transition(typeof(SlimeIdleState));
             }
             else
             {

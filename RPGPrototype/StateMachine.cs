@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using RPGPrototype.Log;
 
@@ -7,13 +8,13 @@ namespace RPGPrototype;
 public class StateMachine
 {
 	private State _currentState;
-	private Dictionary<string, State> _states = new();
+	private Dictionary<Type, State> _states = new();
 
 	public StateMachine(List<State> states)
 	{
 		foreach (State state in states)
 		{
-			_states[state.Name] = state;
+			_states[state.GetType()] = state;
 		}
 
 		CurrentState = states[0];
@@ -31,9 +32,9 @@ public class StateMachine
 		CurrentState.Update(gameTime);
 	}
 
-	public void Transition(string newStateName)
+	public void Transition(Type newState)
 	{
-		if(_states.TryGetValue(newStateName, out State state))
+		if(_states.TryGetValue(newState, out State state))
 		{
 			if (state == CurrentState)
 			{
@@ -50,7 +51,7 @@ public class StateMachine
 		}
 		else
 		{
-			throw new KeyNotFoundException("No state with name: " + newStateName);
+			throw new KeyNotFoundException("No state with name: " + nameof(newState));
 		}
 	}
 }

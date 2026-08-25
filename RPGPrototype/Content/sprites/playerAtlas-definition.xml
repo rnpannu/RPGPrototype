@@ -2,51 +2,64 @@
 <TextureAtlas>
     <Texture>sprites/characters/player</Texture>
     <Regions>
-        <Region name="player-idle-down1" x="0" y="16" width="16" height="32" />
-        <Region name="player-idle-down2" x="32" y="16" width="16" height="32" />
-        <Region name="player-idle-down3" x="64" y="16" width="16" height="32" />
-        <Region name="player-idle-down4" x="96" y="16" width="16" height="32" />
-        <Region name="player-idle-down5" x="128" y="16" width="16" height="32" />
-        <Region name="player-idle-down6" x="160" y="16 " width="16" height="32" />
+        <Region name="player-idle-down1" x="0" y="0 " width="32" height="32" />
+        <Region name="player-idle-down2" x="32" y="0" width="32" height="32" />
+        <Region name="player-idle-down3" x="64" y="0" width="32" height="32" />
+        <Region name="player-idle-down4" x="96" y="0" width="32" height="32" />
+        <Region name="player-idle-down5" x="128" y="0" width="32" height="32" />
+        <Region name="player-idle-down6" x="160" y="0 " width="32" height="32" />
 
-        <Region name="player-idle-right1" x="0" y="64" width="16" height="32" />
-        <Region name="player-idle-right2" x="32" y="64" width="16" height="32" />
-        <Region name="player-idle-right3" x="64" y="64" width="16" height="32" />
-        <Region name="player-idle-right4" x="96" y="64" width="16" height="32" />
-        <Region name="player-idle-right5" x="128" y="64" width="16" height="32" />
-        <Region name="player-idle-right6" x="160" y="64 " width="16" height="32" />
+        <Region name="player-idle-right1" x="0" y="32" width="32" height="32" />
+        <Region name="player-idle-right2" x="32" y="32" width="32" height="32" />
+        <Region name="player-idle-right3" x="64" y="32" width="32" height="32" />
+        <Region name="player-idle-right4" x="96" y="32" width="32" height="32" />
+        <Region name="player-idle-right5" x="128" y="32" width="32" height="32" />
+        <Region name="player-idle-right6" x="160" y="32" width="32" height="32" />
 
-        <Region name="player-idle-up1" x="0" y="112" width="16" height="32" />
-        <Region name="player-idle-up2" x="32" y="112" width="16" height="32" />
-        <Region name="player-idle-up3" x="64" y="112" width="16" height="32" />
-        <Region name="player-idle-up4" x="96" y="112" width="16" height="32" />
-        <Region name="player-idle-up5" x="128" y="112" width="16" height="32" />
-        <Region name="player-idle-up6" x="160" y="112 " width="16" height="32" />
+        <Region name="player-idle-up1" x="0" y="64" width="32" height="32" />
+        <Region name="player-idle-up2" x="32" y="64" width="32" height="32" />
+        <Region name="player-idle-up3" x="64" y="64" width="32" height="32" />
+        <Region name="player-idle-up4" x="96" y="64" width="32" height="32" />
+        <Region name="player-idle-up5" x="128" y="64" width="32" height="32" />
+        <Region name="player-idle-up6" x="160" y="64 " width="32" height="32" />
 
-        <Region name="player-walking-down1" x="0" y="160" width="16" height="32" />
-        <Region name="player-walking-down2" x="32" y="160" width="16" height="32" />
-        <Region name="player-walking-down3" x="64" y="160" width="16" height="32" />
-        <Region name="player-walking-down4" x="96" y="160" width="16" height="32" />
-        <Region name="player-walking-down5" x="128" y="160" width="16" height="32" />
-        <Region name="player-walking-down6" x="160" y="160" width="16" height="32" />
+        <Region name="player-walking-down1" x="0" y="96" width="32" height="32" />
+        <Region name="player-walking-down2" x="32" y="96" width="32" height="32" />
+        <Region name="player-walking-down3" x="64" y="96" width="32" height="32" />
+        <Region name="player-walking-down4" x="96" y="96" width="32" height="32" />
+        <Region name="player-walking-down5" x="128" y="96" width="32" height="32" />
+        <Region name="player-walking-down6" x="160" y="96" width="32" height="32" />
         
-        <Region name="player-walking-right1" x="0" y="208" width="16" height="32" />
-        <Region name="player-walking-right2" x="32" y="208" width="16" height="32" />
-        <Region name="player-walking-right3" x="64" y="208" width="16" height="32" />
-        <Region name="player-walking-right4" x="96" y="208" width="16" height="32" />
-        <Region name="player-walking-right5" x="128" y="208" width="16" height="32" />
-        <Region name="player-walking-right6" x="160" y="208" width="16" height="32" />
+        <Region name="player-walking-right1" x="0" y="128" width="32" height="32" />
+        <Region name="player-walking-right2" x="32" y="128" width="32" height="32" />
+        <Region name="player-walking-right3" x="64" y="128" width="32" height="32" />
+        <Region name="player-walking-right4" x="96" y="128" width="32" height="32" />
+        <Region name="player-walking-right5" x="128" y="128" width="32" height="32" />
+        <Region name="player-walking-right6" x="160" y="128" width="32" height="32" />
         
-        <Region name="player-walking-up1" x="0" y="256" width="16" height="32" />
-        <Region name="player-walking-up2" x="32" y="256" width="16" height="32" />
-        <Region name="player-walking-up3" x="64" y="256" width="16" height="32" />
-        <Region name="player-walking-up4" x="96" y="256" width="16" height="32" />
-        <Region name="player-walking-up5" x="128" y="256" width="16" height="32" />
-        <Region name="player-walking-up6" x="160" y="256" width="16" height="32" />
-        
-        
+        <Region name="player-walking-up1" x="0" y="160" width="32" height="32" />
+        <Region name="player-walking-up2" x="32" y="160" width="32" height="32" />
+        <Region name="player-walking-up3" x="64" y="160" width="32" height="32" />
+        <Region name="player-walking-up4" x="96" y="160" width="32" height="32" />
+        <Region name="player-walking-up5" x="128" y="160" width="32" height="32" />
+        <Region name="player-walking-up6" x="160" y="160 " width="32" height="32" />
+
+        <Region name="player-attack-down1" x="0" y="192" width="32" height="32" />
+        <Region name="player-attack-down2" x="32" y="192" width="32" height="32" />
+        <Region name="player-attack-down3" x="64" y="192" width="32" height="32" />
+        <Region name="player-attack-down4" x="96" y="192" width="32" height="32" />
+
+        <Region name="player-attack-right1" x="0" y="224" width="32" height="32" />
+        <Region name="player-attack-right2" x="32" y="224" width="32" height="32" />
+        <Region name="player-attack-right3" x="64" y="224" width="32" height="32" />
+        <Region name="player-attack-right4" x="96" y="224" width="32" height="32" />
+
+        <Region name="player-attack-up1" x="0" y="256" width="32" height="32" />
+        <Region name="player-attack-up2" x="32" y="256" width="32" height="32" />
+        <Region name="player-attack-up3" x="64" y="256" width="32" height="32" />
+        <Region name="player-attack-up4" x="96" y="256" width="32" height="32" />
     </Regions>
-    <Animations>
+    <Animations> 
         <Animation name="player-idle-down" delay = "250">
             <Frame region="player-idle-down1"/>
             <Frame region="player-idle-down2"/>
@@ -99,6 +112,27 @@
             <Frame region="player-walking-down4"/>
             <Frame region="player-walking-down5"/>
             <Frame region="player-walking-down6"/>
+        </Animation>
+
+        <Animation name="player-attack-down" delay = "250">
+            <Frame region="player-attack-down1"/>
+            <Frame region="player-attack-down2"/>
+            <Frame region="player-attack-down3"/>
+            <Frame region="player-attack-down4"/>
+        </Animation>
+
+        <Animation name="player-attack-right" delay = "250">
+            <Frame region="player-attack-right1"/>
+            <Frame region="player-attack-right2"/>
+            <Frame region="player-attack-right3"/>
+            <Frame region="player-attack-right4"/>
+        </Animation>
+
+        <Animation name="player-attack-up" delay = "250">
+            <Frame region="player-attack-up1"/>
+            <Frame region="player-attack-up2"/>
+            <Frame region="player-attack-up3"/>
+            <Frame region="player-attack-up4"/>
         </Animation>
 </Animations>
 </TextureAtlas>

@@ -1,16 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using MonoGameLibrary;
 
 namespace RPGPrototype.Objects.States.PlayerStates;
 
 public class PlayerIdleState : PlayerState
 {
-	public const string StateName = nameof(PlayerIdleState);
-	public override string Name => StateName;
+	public event Action RequestTransitionToMove;
 	
 	public PlayerIdleState(Player player) : base(player)
 	{
-
+		
 	}
 
 	public override void Enter()
@@ -30,7 +30,7 @@ public class PlayerIdleState : PlayerState
 		if (!Player.MovementDirection.IsZero())
 		{
 			Player.FacingDirection = Player.MovementDirection;
-			Player.StateMachine.Transition(PlayerMovementState.StateName);
+			RequestTransitionToMove?.Invoke();
 			return;
 		}
 	}

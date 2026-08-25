@@ -10,3 +10,8 @@ Look at compartmentalising code. Eg:
 
 
 Interesting design ideas around events: https://claude.ai/chat/82f232b9-9541-4ec4-9d41-7bf29435395e
+
+
+Speculative AI stuff that might be useful later:
+
+That second gap is exactly where behavior trees pick up the slack, and it's directly relevant to the Patrol/Alert/Pursue/Search FSM you've already built. A behavior tree replaces "explicit transition between every pair of states" with composite nodes — Selector (try children in priority order until one succeeds, essentially "OR"), Sequence ("AND"), decorators (invert, cooldown, repeat) — over leaf actions/conditions. The payoff: subtrees are modular and reusable (a "Flee" branch can be dropped under multiple parent conditions without redefining transitions to and from it), and priority is expressed structurally rather than as N² transition rules. If your enemy logic grows past "if health low then flee, unless cornered, unless already engaged," that's the point where a BT starts paying for itself over the 4-state FSM.

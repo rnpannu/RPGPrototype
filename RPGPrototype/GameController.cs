@@ -111,7 +111,12 @@ public static class GameController
     }
     public static bool M1Clicked()
     {
-        return s_mouse.WasButtonJustPressed(MouseButton.Left);
+        if ((s_mouse.X > 0 && s_mouse.X < Core.VirtualWidth) && (s_mouse.Y > 0 && s_mouse.Y < Core.VirtualHeight))
+        {
+            return s_mouse.WasButtonJustPressed(MouseButton.Left);
+        }
+
+        return false;
     }
     public static bool M1Released()
     {

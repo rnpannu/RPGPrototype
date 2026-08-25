@@ -13,33 +13,29 @@ namespace RPGPrototype.Objects;
 
 public class Player : Entity
 {
-	private TimeSpan _attackTimer;
 	
-	public StateMachine StateMachine
-	{
-		get => field;
-		private set => field = value;
-	}
-	
-	public PlayerInput CurrentInput { get; set; }
-
-	public override Vector2 FacingDirection {
-		get => base.FacingDirection;
-		set
-		{
-			if (value != base.FacingDirection)
-			{
-				base.FacingDirection = value;
-				UpdateAnimation();
-			}
-		} }
-
-	public override RectangleF Hitbox => new RectangleF(Position.X - 6, Position.Y - 8, 12, 16);	 // magic numbers from spritesheet
-
+	private AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
 	public enum AnimationKey { Idle, Walk, Attack, Dead }
 	public enum AnimationDirection { Up, Down, Side, None }
-	private AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
 	public (AnimationKey, AnimationDirection) CurrentAnimation { get; private set; }
+	
+	public PlayerInput CurrentInput { get; set; }
+	
+	public override RectangleF Hitbox => new RectangleF(Position.X - 6, Position.Y - 8, 12, 16);	 // magic numbers from spritesheet
+
+	public float AttackTimer
+	{
+		get => field;
+		private set
+		{
+			OnAttackCooldown = value != 0f; // if 0 able to attack
+			field = value;
+		}
+	}
+	public float AttackCooldown { get; private set; }
+	public bool OnAttackCooldown { get; private set; }
+	public bool CanAttack { get; set; }
+	public bool CanMove { get; set; }
 	
 	public Dictionary<(AnimationKey, AnimationDirection), Animation?> Animations
 	{
@@ -47,18 +43,53 @@ public class Player : Entity
 		set => field = value;
 	} = new();
 	
+	public override Vector2 FacingDirection {
+		get => base.FacingDirection;
+		set
+		{
+			if (value != base.FacingDirection) // value does not equal current value -> direction change
+			{
+				base.FacingDirection = value;
+				UpdateAnimation();
+			}
+		} 
+	}
+	
+	public StateMachine StateMachine
+	{
+		get => field;
+		private set => field = value;
+	}
+	
+	public PlayerState LastState { get; set; }
+	
+	public event Action Attack;
+	
 	public Player(Vector2 position) : base(position)
 	{
 		_maxVelocity = new Vector2(100, 100);
 		Acceleration = new Vector2(800, 800);
+		
+		AttackTimer = 0f;
+		AttackCooldown = 500f; // half second
+
+		Attack += ConsumeRequestToAttack;
 	}
-	
+
 	public override void Initialize()
 	{
+		var idle = new PlayerIdleState(this);
+		idle.RequestTransitionToMove += ConsumeRequestToMove;
+		var movement = new PlayerMovementState(this);
+		movement.RequestTransitionToIdle += ConsumeRequestToIdle;
+		var attack = new PlayerAttackState(this);
+		attack.RequestTransitionOutOfAttack += ConsumeRequestToResolveAttack;
+		
 		List<State> states =
 		[
-			new PlayerIdleState(this),
-			new PlayerMovementState(this)
+			idle,
+			movement,
+			attack
 		];
 		StateMachine = new StateMachine(states);
 	}
@@ -77,23 +108,62 @@ public class Player : Entity
 		Animations[(key, up)] = objectAtlas.GetAnimation("player-idle-up");
 		Animations[(key, down)] = objectAtlas.GetAnimation("player-idle-down");
 		Animations[(key, side)] = objectAtlas.GetAnimation("player-idle-right");
-		//Animations.TryAdd((key, up), objectAtlas.GetAnimation("player-walking-up"));
+		key = AnimationKey.Attack;
+		//Animations[(key, up)] = objectAtlas.GetAnimation("player-idle-up");
+		Animations[(key, down)] = objectAtlas.GetAnimation("player-attack-down");
+		Animations[(key, side)] = objectAtlas.GetAnimation("player-attack-right");
+		Animations[(key, up)] = objectAtlas.GetAnimation("player-attack-up");
+		//Animations[(key, side)] = objectAtlas.GetAnimation("player-idle-right");
 		
 		Sprite =  objectAtlas.CreateAnimatedSprite("player-idle-right");
-		SetAnimation(key, side);
+		SetAnimation(AnimationKey.Idle, side);
+	}
+
+	private void ConsumeRequestToMove()
+	{
+		StateMachine.Transition(typeof(PlayerMovementState));
 	}
 	
+	private void ConsumeRequestToIdle()
+	{
+		StateMachine.Transition(typeof(PlayerIdleState));
+	}
+	
+	private void ConsumeRequestToAttack()
+	{
+		LastState = (PlayerState) StateMachine.CurrentState;
+		AnimatedSprite.ResetAnimation();
+		StateMachine.Transition(typeof(PlayerAttackState));
+	}
+	private void ConsumeRequestToResolveAttack()
+	{
+		//var thing = LastState.GetType();
+		StateMachine.Transition(LastState.GetType());
+	}
 	public override void Think(GameTime gameTime)
 	{
-		ProcessInput();
+		ProcessInput(gameTime);
 		StateMachine.Update(gameTime);
 	}
 
-	public void ProcessInput(//PlayerInput input
-	)
+	public void ProcessInput(GameTime gameTime)
 	{
-		MovementDirection = CurrentInput.MovementDirection;
+		var input = CurrentInput;
+		MovementDirection = input.MovementDirection;
+
+		if (OnAttackCooldown)
+		{
+			float dtMilliseconds = (float) gameTime.ElapsedGameTime.TotalMilliseconds;
+			float remainingCooldown = (float) AttackTimer - dtMilliseconds;
+			AttackTimer = (remainingCooldown > 0f) ? remainingCooldown : 0f;
+		}
+		else if (input.AttackPressed)
+		{
+			AttackTimer += AttackCooldown;
+			Attack?.Invoke();
+		}
 	}
+	
 	/// <summary>
 	/// Increase or decay velocity according to current movement input. Permit wall sliding by retaining velocity in other directions.
 	/// </summary>
@@ -101,8 +171,7 @@ public class Player : Entity
 	{
 		// Potentially want to refactor into movement state
 		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-		float velocityDecay = 50f * (float) gameTime.ElapsedGameTime.TotalSeconds; // Decays at 50 / second at 60fps? Math could be wrong
-
+		
 		float newX;
 		if (!MovementDirection.IsZeroX())
 		{
@@ -174,30 +243,35 @@ public class Player : Entity
 			}
 		}
 	}
-	
+
+	public AnimationDirection DirectionToAnimDirection(Vector2 dir)
+	{
+		AnimationDirection result;
+		if (Math.Abs(dir.Y) > Math.Abs(dir.X) * 1.5) // Prefer horizontal animations
+		{
+			if (dir.Y < 0) 
+			{
+				result = AnimationDirection.Up;
+			}
+			else 
+			{
+				result = AnimationDirection.Down;
+			}
+		}
+		else
+		{
+			result = AnimationDirection.Side;
+		}
+
+		return result;
+	}
 	/// <summary>
 	/// Change the player's animation upon a movement direction change
 	/// </summary>
 	/// <param name="movementDir">The current direction of movement</param>
 	public void UpdateAnimation()
 	{
-		AnimationDirection direction;
-		if (Math.Abs(FacingDirection.Y) > Math.Abs(FacingDirection.X) * 1.5) // Prefer horizontal animations
-		{
-			if (FacingDirection.Y < 0) 
-			{
-				direction = AnimationDirection.Up;
-			}
-			else 
-			{
-				direction = AnimationDirection.Down;
-			}
-		}
-		else
-		{
-			direction = AnimationDirection.Side;
-		}
-
+		AnimationDirection direction = DirectionToAnimDirection(FacingDirection);
 		SetAnimation(CurrentAnimation.Item1, direction);
 	}
 	

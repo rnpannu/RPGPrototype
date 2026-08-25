@@ -4,7 +4,6 @@ namespace RPGPrototype.Objects.States.SlimeStates;
 
 public abstract class SlimeState : State
 {
-	public abstract string Name { get; }
 	
 	public SlimeState(Slime slime)
 	{

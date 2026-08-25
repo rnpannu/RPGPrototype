@@ -40,6 +40,11 @@ public class LevelInputManager
 
 		bool esc = false;
 		bool debug = false;
+		bool attack = false;
+		if (GameController.M1Clicked())
+		{
+			attack = true;
+		}
 		if (GameController.Exit())
 		{
 			esc = true;
@@ -49,7 +54,7 @@ public class LevelInputManager
 		{
 			debug = true;
 		}
-		return new PlayerInput(movementDir, false, esc);
+		return new PlayerInput(movementDir, attack, esc);
 	}
 
 	/*public InventoryInput GetInventoryInput(GameTime gameTime)
