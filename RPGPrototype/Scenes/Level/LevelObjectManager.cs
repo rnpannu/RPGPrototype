@@ -115,7 +115,7 @@ public class LevelObjectManager
 
 		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 		Vector2 prospectiveMove = entity.Velocity * dt;
-		Vector2 validatedMove = Collision.ValidateMovement(entity.Hitbox, prospectiveMove);
+		Vector2 validatedMove = Collision.ValidateMovement(entity.Hitbox, prospectiveMove, entity.ZVelocity);
 
 		Vector2 velocity = entity.Velocity;
 		if (validatedMove.X == 0) velocity.X = 0;

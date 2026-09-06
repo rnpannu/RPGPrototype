@@ -54,19 +54,17 @@ public class CollisionManager
 
     }
 
-    public Vector2 ValidateMovement(RectangleF target, Vector2 prospectiveMove)
+    public Vector2 ValidateMovement(RectangleF target, Vector2 prospectiveMove, float ZVelocity)
     {
         int tileSize = Map.TileSize;
         Vector2 validatedMove = prospectiveMove;
-        Console.WriteLine("Target Width:" + target.Width);
-        Console.WriteLine("Target X:" + target.X);
         RectangleF prospectiveMoveX = new RectangleF(target.X + prospectiveMove.X, target.Y, target.Width, target.Height );
 
         _tileIntersections = GetIntersectingTilesHorizontal(prospectiveMoveX);
 
         foreach (var tile in _tileIntersections)
         {
-            if (MapCollisionGrid[tile.Y, tile.X] == 1)
+            if (MapCollisionGrid[tile.Y, tile.X] == 1 && ZVelocity < 5f)
             {
                 if (prospectiveMoveX.Intersects(
                     new RectangleF(tile.X * tileSize, tile.Y * tileSize, tileSize, tileSize)))
@@ -88,7 +86,7 @@ public class CollisionManager
 
         foreach (var tileY in _tileIntersections)
         {
-            if (MapCollisionGrid[tileY.Y, tileY.X] == 1)
+            if (MapCollisionGrid[tileY.Y, tileY.X] == 1 && ZVelocity < 5)
             {
                 if (prospectiveMoveY.Intersects(
                     new RectangleF(tileY.X * tileSize, tileY.Y * tileSize, tileSize, tileSize)))

@@ -11,6 +11,11 @@ public static class GameController
     private static KeyboardInfo s_keyboard => Core.Input.Keyboard;
     private static MouseInfo s_mouse => Core.Input.Mouse;
 
+    public static bool MoveJump()
+    {
+        return s_keyboard.WasKeyJustPressed(Keys.Space);
+    }
+
     public static bool MoveUp()
     {
         return s_keyboard.IsKeyDown(Keys.Up) ||
@@ -34,7 +39,7 @@ public static class GameController
         return s_keyboard.IsKeyDown(Keys.Right) ||
                s_keyboard.IsKeyDown(Keys.D);
     }
-    
+
     public static bool IncrementUp()
     {
         return s_keyboard.WasKeyJustPressed(Keys.Up) ||
@@ -58,7 +63,7 @@ public static class GameController
         return s_keyboard.WasKeyJustPressed(Keys.Right) ||
                s_keyboard.WasKeyJustPressed(Keys.D);
     }
-    
+
     public static bool Pause()
     {
         return s_keyboard.WasKeyJustPressed(Keys.Escape);
@@ -68,12 +73,12 @@ public static class GameController
     {
         return s_keyboard.WasKeyJustPressed(Keys.Enter);
     }
-    
+
     public static bool MovementKey()
     {
         return s_keyboard.WasKeyJustPressed(Keys.Space);
     }
-    
+
     public static bool Exit()
     {
         return s_keyboard.WasKeyJustPressed(Keys.Escape);
@@ -91,7 +96,7 @@ public static class GameController
     {
         return s_mouse.Position.ToVector2();
     }
-    
+
     public static bool ToggleDebug()
     {
         return s_keyboard.WasKeyJustPressed(Keys.F3);
@@ -118,4 +123,3 @@ public static class GameController
         return s_mouse.WasButtonJustReleased(MouseButton.Left);
     }
 }
-

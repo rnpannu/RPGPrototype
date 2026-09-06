@@ -3,11 +3,13 @@
 namespace RPGPrototype.Scenes.Input;
 
 public readonly struct PlayerInput(
-	Vector2 movementDirection,
-	bool AttackPressed,
-	bool quit)
+    Vector2 movementDirection,
+    bool JumpPressed,
+    bool AttackPressed,
+    bool quit)
 {
-	public readonly Vector2 MovementDirection = movementDirection;
+    public readonly Vector2 MovementDirection = movementDirection;
+    public readonly bool JumpPressed = JumpPressed;
 	public readonly bool AttackPressed = AttackPressed;
 	public readonly bool Quit = quit;
 }

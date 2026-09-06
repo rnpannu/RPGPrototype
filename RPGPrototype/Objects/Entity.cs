@@ -10,14 +10,14 @@ public abstract class Entity
 {
 	/*private int _baseMaxHealth;
 	private Vector2 _baseMovementSpeed;*/
-	
+
 	protected Vector2 _maxVelocity;
-	
+
 	public Entity(Vector2 position)
 	{
 		Position = position;
 	}
-	
+
 	public virtual Sprite Sprite
 	{
 		get => field;
@@ -37,41 +37,85 @@ public abstract class Entity
 		}
 	}
 
-	public virtual Vector2 MovementDirection
-	{
-		get => field;
-		set
-		{
-			field = value.SnapToZero(); // Input direction
-			if (field != Vector2.Zero)
-			{
-				FacingDirection = field;
-			}
-		}
-	}
+	public virtual float ZElevation
+    {
+        get => field;
+        set
+        {
+            field = value;
+        }
+    }
 
-	public virtual Vector2 FacingDirection
-	{
-		get => field;
-		set => field = value.SnapToZero();
-	} = new Vector2(0, 1); // facing down
+    public virtual float ZVelocity
+    {
+        get => field;
+        set
+        {
+            field = value;
+        }
+    }
+    public virtual float JumpDuration
+    {
+        get => field;
+        set
+        {
+            field = 120;
+        }
+    }
 
-	public virtual Vector2 Velocity
-	{
+    public virtual float CurrentJumpDuration
+    {
+        get => field;
+        set
+        {
+            field = value;
+        }
+    }
+
+    public virtual float ZAcceleration
+    {
+        get => field;
+        set {
+            field = value;
+        }
+    }
+
+    public virtual Vector2 MovementDirection
+    {
+        get => field;
+        set
+        {
+            field = value.SnapToZero(); // Input direction
+            if (field != Vector2.Zero)
+            {
+                FacingDirection = field;
+            }
+        }
+    }
+
+    public virtual Vector2 FacingDirection
+    {
+        get => field;
+        set => field = value.SnapToZero();
+    } = new Vector2(0, 1); // facing down
+
+
+    public virtual Vector2 Velocity
+    {
+        get => field;
+        set => field = value.SnapToZero();
+    }
+
+	public virtual Vector2 Acceleration {
 		get => field;
-		set => field = value.SnapToZero();
-	}
-	
-	public virtual Vector2 Acceleration { 
-		get => field; 
 		set => field = value.SnapToZero(); }
-	
+
 	public virtual Rectangle Rect =>
 		new Rectangle((int)(Position.X - Sprite.Origin.X),
 			(int)(Position.Y - Sprite.Origin.Y),
 			(int)Sprite.Width,
 			(int)Sprite.Height);
-	
+
 	public virtual RectangleF RectF =>
 		new RectangleF((Position.X - Sprite.Origin.X),
 			(Position.Y - Sprite.Origin.Y),
@@ -79,7 +123,7 @@ public abstract class Entity
 			Sprite.Height);
 
 	public virtual RectangleF Hitbox { get; protected set; }
-	
+
 	public virtual void Initialize()
 	{
 
@@ -87,12 +131,14 @@ public abstract class Entity
 
 	public virtual void LoadContent()
 	{
-		
+
 	}
-	
+
 	public virtual void Think(GameTime gameTime) { }
 
-	public virtual void UpdateVelocity(GameTime gameTime) {}
+    public virtual void UpdateVelocity(GameTime gameTime) { }
+
+    public virtual void Jump(GameTime gameTime) { }
 
 	public virtual void ApplyMovement(GameTime gameTime)
 	{
@@ -112,8 +158,10 @@ public abstract class Entity
 	}
 
 	public virtual void Draw(GameTime gameTime)
-	{
-		Sprite.Draw(Core.SpriteBatch, Position);
+    {
+        float scaleZ = ZElevation / 100; //100 Should be replaced with max jump height for player.
+        Vector2 jumpPos = new Vector2(Position.X, Position.Y - (scaleZ * 16));
+		Sprite.Draw(Core.SpriteBatch, jumpPos);
 	}
 
 	/// <summary>

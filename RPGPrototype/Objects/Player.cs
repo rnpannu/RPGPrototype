@@ -14,13 +14,13 @@ namespace RPGPrototype.Objects;
 public class Player : Entity
 {
 	private TimeSpan _attackTimer;
-	
+
 	public StateMachine StateMachine
 	{
 		get => field;
 		private set => field = value;
 	}
-	
+
 	public PlayerInput CurrentInput { get; set; }
 
 	public override Vector2 FacingDirection {
@@ -40,19 +40,19 @@ public class Player : Entity
 	public enum AnimationDirection { Up, Down, Side, None }
 	private AnimatedSprite AnimatedSprite => (AnimatedSprite) Sprite;
 	public (AnimationKey, AnimationDirection) CurrentAnimation { get; private set; }
-	
+
 	public Dictionary<(AnimationKey, AnimationDirection), Animation?> Animations
 	{
 		get => field;
 		set => field = value;
 	} = new();
-	
-	public Player(Vector2 position) : base(position)
-	{
-		_maxVelocity = new Vector2(100, 100);
-		Acceleration = new Vector2(800, 800);
-	}
-	
+
+    public Player(Vector2 position) : base(position)
+    {
+        _maxVelocity = new Vector2(100, 100);
+        Acceleration = new Vector2(800, 800);
+    }
+
 	public override void Initialize()
 	{
 		List<State> states =
@@ -78,22 +78,34 @@ public class Player : Entity
 		Animations[(key, down)] = objectAtlas.GetAnimation("player-idle-down");
 		Animations[(key, side)] = objectAtlas.GetAnimation("player-idle-right");
 		//Animations.TryAdd((key, up), objectAtlas.GetAnimation("player-walking-up"));
-		
+
 		Sprite =  objectAtlas.CreateAnimatedSprite("player-idle-right");
 		SetAnimation(key, side);
 	}
-	
+
 	public override void Think(GameTime gameTime)
 	{
 		ProcessInput();
 		StateMachine.Update(gameTime);
 	}
 
-	public void ProcessInput(//PlayerInput input
-	)
-	{
-		MovementDirection = CurrentInput.MovementDirection;
-	}
+    public void ProcessInput(/*PlayerInput input*/)
+    {
+        MovementDirection = CurrentInput.MovementDirection;
+        if (CurrentInput.JumpPressed && CurrentJumpDuration == 0)
+        {
+            CurrentJumpDuration = 15;
+            ZVelocity = 250;
+        }
+    }
+
+    public override void Jump(GameTime gameTime)
+    {
+        float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        float newZVel = ZVelocity + 10 * ZAcceleration * dt;
+
+    }
+
 	/// <summary>
 	/// Increase or decay velocity according to current movement input. Permit wall sliding by retaining velocity in other directions.
 	/// </summary>
@@ -101,7 +113,22 @@ public class Player : Entity
 	{
 		// Potentially want to refactor into movement state
 		float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-		float velocityDecay = 50f * (float) gameTime.ElapsedGameTime.TotalSeconds; // Decays at 50 / second at 60fps? Math could be wrong
+        float velocityDecay = 50f * (float)gameTime.ElapsedGameTime.TotalSeconds; // Decays at 50 / second at 60fps? Math could be wrong
+
+        float gravity = 600;
+        ZVelocity -= gravity * dt;
+
+
+        ZElevation += ZVelocity * dt;
+        if( ZElevation < 0) {
+            ZElevation = 0;
+        }
+
+
+        if( CurrentJumpDuration > 0)
+        {
+            CurrentJumpDuration--;
+        }
 
 		float newX;
 		if (!MovementDirection.IsZeroX())
@@ -114,38 +141,44 @@ public class Player : Entity
 		}
 
 		float newY;
-		if (!MovementDirection.IsZeroY())
-		{
-			newY = Velocity.Y + MovementDirection.Y * Acceleration.Y * dt;
-		}
-		else
-		{
-			newY = Decelerate(Velocity.Y, Acceleration.Y, dt);
-		}
-		
+        if (!MovementDirection.IsZeroY())
+        {
+            newY = Velocity.Y + MovementDirection.Y * Acceleration.Y * dt;
+        }
+        else
+        {
+            newY = Decelerate(Velocity.Y, Acceleration.Y, dt);
+        }
+
+        if (CurrentInput.JumpPressed || ZVelocity > 0)
+        {
+            //Console.WriteLine(CurrentJumpDuration);
+            Console.WriteLine("ZVelocity: " + ZVelocity);
+        }
+
 		Velocity = Vector2.Clamp(new Vector2(newX, newY), -_maxVelocity, _maxVelocity);
 	}
 
-	/// <summary>
-	/// Helper function to decrease a velocity by an acceleration value
-	/// </summary>
-	/// <param name="velocity"></param>
-	/// <param name="deceleration"></param>
-	/// <param name="dt"></param>
-	/// <returns>The new velocity after one deceleration increment</returns>
-	private float Decelerate(float velocity, float deceleration, float dt)
-	{
-		float amount = deceleration * dt;
+    /// <summary>
+    /// Helper function to decrease a velocity by an acceleration value
+    /// </summary>
+    /// <param name="velocity"></param>
+    /// <param name="deceleration"></param>
+    /// <param name="dt"></param>
+    /// <returns>The new velocity after one deceleration increment</returns>
+    private float Decelerate(float velocity, float deceleration, float dt)
+    {
+        float amount = deceleration * dt;
 
-		if (Math.Abs(velocity) <= amount)
-		{
-			return 0f;
-		}
+        if (Math.Abs(velocity) <= amount)
+        {
+            return 0f;
+        }
 
-		return velocity -
-		       Math.Sign(velocity) * amount;
-	}
-	
+        return velocity -
+               Math.Sign(velocity) * amount;
+    }
+
 	/// <summary>
 	/// Alter the Player's position by an amount, or force a move to an absolute position.
 	/// </summary>
@@ -174,7 +207,7 @@ public class Player : Entity
 			}
 		}
 	}
-	
+
 	/// <summary>
 	/// Change the player's animation upon a movement direction change
 	/// </summary>
@@ -184,11 +217,11 @@ public class Player : Entity
 		AnimationDirection direction;
 		if (Math.Abs(FacingDirection.Y) > Math.Abs(FacingDirection.X) * 1.5) // Prefer horizontal animations
 		{
-			if (FacingDirection.Y < 0) 
+			if (FacingDirection.Y < 0)
 			{
 				direction = AnimationDirection.Up;
 			}
-			else 
+			else
 			{
 				direction = AnimationDirection.Down;
 			}
@@ -200,7 +233,7 @@ public class Player : Entity
 
 		SetAnimation(CurrentAnimation.Item1, direction);
 	}
-	
+
 	public override void Draw(GameTime gameTime)
 	{
 		base.Draw(gameTime);

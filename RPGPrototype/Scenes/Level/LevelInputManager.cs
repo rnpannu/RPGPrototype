@@ -9,7 +9,7 @@ using RPGPrototype.Scenes.Input;
 namespace RPGPrototype.Scenes;
 
 /// <summary>
-/// A class to control inputs and 
+/// A class to control inputs and
 /// </summary>
 public class LevelInputManager
 {
@@ -17,22 +17,24 @@ public class LevelInputManager
 	{
 		Initialize();
 	}
-	
+
 	public void Initialize()
 	{
 
 	}
-		
+
 	public PlayerInput GetPlayerInput(GameTime gameTime)
 	{
-		//LastMovementDirection = _movementDir;
-		Vector2 movementDir = Vector2.Zero;
-		
+        //LastMovementDirection = _movementDir;
+        Vector2 movementDir = Vector2.Zero;
+        bool playerJump = false;
+
 		if (GameController.MoveUp()) movementDir.Y--;
 		if (GameController.MoveDown()) movementDir.Y++;
 		if (GameController.MoveLeft()) movementDir.X--;
-		if (GameController.MoveRight()) movementDir.X++;
-		
+        if (GameController.MoveRight()) movementDir.X++;
+        if (GameController.MoveJump()) playerJump = true;
+
 		if (movementDir != Vector2.Zero)
 		{
 			movementDir.Normalize();
@@ -49,16 +51,16 @@ public class LevelInputManager
 		{
 			debug = true;
 		}
-		return new PlayerInput(movementDir, false, esc);
+		return new PlayerInput(movementDir, playerJump, false, esc);
 	}
 
 	/*public InventoryInput GetInventoryInput(GameTime gameTime)
 	{
-		
+
 	}*/
-	
+
 	public void Draw(GameTime gameTime)
 	{
-		
+
 	}
 }
