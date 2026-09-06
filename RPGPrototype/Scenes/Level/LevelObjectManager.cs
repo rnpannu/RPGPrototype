@@ -22,7 +22,7 @@ public class LevelObjectManager
 	private TextureAtlas _objectAtlas;
 	private readonly List<Enemy> _enemies = new();
 	private bool _drawPlayer = true;
-	
+
 	public CollisionManager Collision
 	{
 		get => field;
@@ -63,8 +63,8 @@ public class LevelObjectManager
 		}
 		InitializeDebug();
 	}
-	
-	
+
+
 	public void InitializeDebug()
 	{
 		DebugMenu.Instance.Watch.RegisterWatch("player state", () => Player.StateMachine.CurrentState.Name.ToString());
@@ -80,8 +80,8 @@ public class LevelObjectManager
 		DebugMenu.Instance.Watch.RegisterWatch("Slime LOS", () => _enemies[0].HasLOS.ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("Current Slime State", () => _enemies[0].StateMachine.CurrentState.Name.ToString());
 		DebugMenu.Instance.Watch.RegisterWatch("LOS target", () => _enemies[0].CurrentLOSTarget.ToString());
-		
-		
+
+
 		DebugMenu.Instance.Flags.RegisterFlag("Show Hitboxes" ,() => {
 			Collision.ShowHitboxes = !Collision.ShowHitboxes;
 		});
@@ -104,7 +104,7 @@ public class LevelObjectManager
 			enemy.LoadContent(enemyAtlas);
 		}
 	}
-	
+
 	/// <summary>
 	/// Advance an entity's velocity and validate the resulting move against level collision
 	/// </summary>
@@ -124,7 +124,7 @@ public class LevelObjectManager
 
 		entity.ApplyMovement(gameTime);
 	}
-	
+
 	/// <summary>
 	/// Update entities and anything else that the object manager is responsible for.
 	/// </summary>
@@ -135,11 +135,11 @@ public class LevelObjectManager
 		Player.CurrentInput = input;
 		ResolveMovement(Player, gameTime);
 
-		foreach (var enemy in _enemies)
-		{
-			enemy.CheckLOS(Player.Position, Collision.MapCollisionGrid, Map.TileSize);
-			ResolveMovement(enemy, gameTime);
-		}
+		// foreach (var enemy in _enemies)
+		// {
+		// 	enemy.CheckLOS(Player.Position, Collision.MapCollisionGrid, Map.TileSize);
+		// 	ResolveMovement(enemy, gameTime);
+		// }
 	}
 
 	public void Draw(GameTime gameTime)
